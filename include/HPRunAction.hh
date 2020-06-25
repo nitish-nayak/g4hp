@@ -6,23 +6,24 @@
 #include "G4Run.hh"
 #include "globals.hh"
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
+class HPRunActionMessenger;
 
 class HPRunAction : public G4UserRunAction
 {
-public: // Without description
-
+public:
+  
   HPRunAction();
   ~HPRunAction();
-
-public: // With description
- 
+  HPRunActionMessenger* raMessenger;
+  
+public: 
+  
   void BeginOfRunAction(const G4Run*);
-  // In this method histogramms are booked
-
   void EndOfRunAction(const G4Run*);
-  // In this method bookHisto method is called in which histogramms are filled
-
+  void SetOutputFileName(const G4String&);
+  
+  G4String fileName;
+  
 };
 
 #endif

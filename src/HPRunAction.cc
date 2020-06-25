@@ -1,5 +1,7 @@
 
+#include "HPRunActionMessenger.hh"
 #include "HPRunAction.hh"
+
 #include "G4UImanager.hh"
 #include "G4VVisManager.hh"
 #include "G4NistManager.hh"
@@ -7,17 +9,14 @@
 #include "HPAnalysis.hh"
 #include "Randomize.hh"
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
-
 HPRunAction::HPRunAction()
-{}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
+{
+  raMessenger = new HPRunActionMessenger(this);
+  fileName    = "noname.root";
+}
 
 HPRunAction::~HPRunAction()
 {}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 void HPRunAction::BeginOfRunAction(const G4Run* aRun)
 {
@@ -40,7 +39,7 @@ void HPRunAction::BeginOfRunAction(const G4Run* aRun)
 #endif
 
 HPAnalysis* analysis = HPAnalysis::getInstance();
-  analysis->book(id0,id1);
+  analysis->book(fileName);
 
 }
 
@@ -59,5 +58,8 @@ HPAnalysis* analysis = HPAnalysis::getInstance();
   analysis->finish();
 
 }
-
+void HPRunAction::SetOutputFileName(const G4String& nfile)
+{
+  fileName = nfile;
+}
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....

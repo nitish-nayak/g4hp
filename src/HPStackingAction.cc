@@ -11,8 +11,6 @@
 #include <cassert>
 #include <iostream>
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 HPStackingAction::HPStackingAction()
 {
   killSecondary  = false;
@@ -20,13 +18,8 @@ HPStackingAction::HPStackingAction()
   elm            = 0;
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 HPStackingAction::~HPStackingAction()
-{
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+{}
 
 G4ClassificationOfNewTrack
 HPStackingAction::ClassifyNewTrack(const G4Track* aTrack)
@@ -68,5 +61,3 @@ HPStackingAction::ClassifyNewTrack(const G4Track* aTrack)
 
   return status;
 }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

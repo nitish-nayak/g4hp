@@ -1,5 +1,3 @@
-//
-// ********************************************************************
 
 #ifndef HPDetectorConstruction_h
 #define HPDetectorConstruction_h 1
@@ -10,8 +8,6 @@
 
 class G4LogicalVolume;
 class HPDetectorMessenger;
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class HPDetectorConstruction : public G4VUserDetectorConstruction
 {
@@ -46,8 +42,6 @@ private:
   HPDetectorMessenger* detectorMessenger;
 
 };
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo.....
 
 #endif
 

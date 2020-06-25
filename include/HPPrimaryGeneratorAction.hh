@@ -7,8 +7,6 @@
 
 class G4ParticleGun;
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 class HPPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
 public:
@@ -25,8 +23,6 @@ private:
 
   G4ParticleGun*   particleGun;
 };
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #endif
 

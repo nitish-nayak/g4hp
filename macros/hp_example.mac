@@ -5,9 +5,14 @@
 
 /run/initialize
 
-#We use the energy beam as the 1st random seed 
+/gun/particle proton
+
+# Convention: 
+#1st random seed: energy
+#2nd random seed: job number
+/gun/energy 158 GeV 
 /random/setSeeds 158 17
 
-/gun/particle proton
-/gun/energy 158 GeV
+/HP/run/outName pC_e158_j17.root
+
 /run/beamOn 10000

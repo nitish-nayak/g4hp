@@ -5,17 +5,13 @@
 #include "G4UImanager.hh"
 #include "G4ios.hh"
 #include "G4Track.hh"
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 HPEventAction::HPEventAction()
 {
   UI = G4UImanager::GetUIpointer();
 }
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 HPEventAction::~HPEventAction(){}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 void HPEventAction::BeginOfEventAction(const G4Event* evt)
 {
@@ -23,8 +19,6 @@ void HPEventAction::BeginOfEventAction(const G4Event* evt)
   if(nEvt%1000==0)G4cout<<"EventID " <<nEvt<<G4endl;
   
 }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 void HPEventAction::AddTrack(const G4Track* aTrack)
 { 
@@ -50,5 +44,3 @@ void HPEventAction::EndOfEventAction(const G4Event* evt)
   if(TrackInfoVec.size()<150)analysis->FillNtuple(TrackInfoVec);
   TrackInfoVec.clear();
 }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....

@@ -1,4 +1,6 @@
 
+#include "HPAnalysis.hh"
+
 #include <vector>
 #include <fstream>
 #include <iomanip>
@@ -6,8 +8,6 @@
 #include <stdlib.h>
 
 //Root 
-#include <TSystem.h>        
-#include <TStopwatch.h>    
 #include <TFile.h>          
 #include <TTree.h>
 
@@ -26,45 +26,26 @@
 #include "G4Run.hh"
 #include "G4Proton.hh"
 
-//g4hp
-#include "HPAnalysis.hh"
-
 using namespace std;
 
 HPAnalysis* HPAnalysis::instance = 0;
 
-//------------------------------------------------------------------------------------
 HPAnalysis::HPAnalysis()
-{
-#ifdef G4ANALYSIS_USE
-#endif
- }
-//------------------------------------------------------------------------------------
+{}
+
 HPAnalysis::~HPAnalysis()
-{ 
+{}
 
-
-#ifdef G4ANALYSIS_USE
-#endif
-}
-//------------------------------------------------------------------------------------
 HPAnalysis* HPAnalysis::getInstance()
 {
   if (instance == 0) instance = new HPAnalysis;
   return instance;
 }
-//------------------------------------------------------------------------------------
-void HPAnalysis::book(G4long id0,G4long id1)
+
+void HPAnalysis::book(G4String & nameout)
 {
-  sprintf(NtupleFileName,"p_%dGeV_C_%04d.root",int(id0),int(id1));
-
-  //Uncomment, omplete the path for tuples and recompile: 
-  //sprintf(NtupleFileName,"/minerva/data/users/laliaga/HadProd/.../Tuples/p_%dGeV_C_%04d.root",id0,id1);
-
-  G4cout<<"==>>Using "<<id0<<" & "<<id1<<" as random generator numbers"<<G4endl; 
-
-  FileNtuple = new TFile(NtupleFileName, "RECREATE","hadron from p+C ntuple");   
-  ProdTree = new TTree("pCinfo","g4HP info from p+C");
+  FileNtuple = new TFile(nameout.c_str(), "RECREATE","hadron from p+C ntuple");   
+  ProdTree = new TTree("HPinfo","g4hp info from hadron + target");
   
   ProdTree->Branch("npart",&g4Proddata.NPart,"NPart/I");
   ProdTree->Branch("pdg", &g4Proddata.PDG,"PDG[NPart]/I");
@@ -75,21 +56,18 @@ void HPAnalysis::book(G4long id0,G4long id1)
   ProdTree->Branch("ff", &g4Proddata.FF,"FF[NPart]/O");
 }
 
-
-//------------------------------------------------------------------------------------
 void HPAnalysis::finish()
 {
-    FileNtuple->cd();
-     
+    FileNtuple->cd();   
     ProdTree->Write();
     FileNtuple->Close();
     delete FileNtuple;
 }
 
-//------------------------------------------------------------------------------------
-
 void HPAnalysis::FillNtuple(std::vector<TrackInfo_t> trackInfoVec)
 {
+  //Calculation using a proton projectile 
+  //work to do: genealize to any projectile (Leo, June25, 2020)
   G4RunManager* pRunManager = G4RunManager::GetRunManager();
   g4Proddata.NPart= trackInfoVec.size();
 
@@ -124,16 +102,13 @@ void HPAnalysis::FillNtuple(std::vector<TrackInfo_t> trackInfoVec)
     g4Proddata.FF[partNum]  = (*iteTrackInfo).FromFast;
      
     partNum++; 
- }
-     if (g4Proddata.NPart>0)WriteNtuple();
+  }
+  if (g4Proddata.NPart>0)WriteNtuple();
+}
+void HPAnalysis::WriteNtuple(){    
+    ProdTree->Fill();   
 }
 void HPAnalysis::GetPrimGenInfo(Double_t enerPrim,G4ParticleDefinition* Part){
   enerPrimGen = enerPrim; 
   particle    = Part;
-
-}
-void HPAnalysis::WriteNtuple(){
-    
-    ProdTree->Fill();
-    
 }

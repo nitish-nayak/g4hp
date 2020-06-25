@@ -26,25 +26,23 @@ class TTree;
 class G4Track;
 class G4VTrajectory;
 
-//class ProdTuple_t;
-
 class HPAnalysis
 {
 public:
 
-   HPAnalysis();
-   ~HPAnalysis();
-
-   void book(G4long,G4long);
-   void FillNtuple(std::vector<TrackInfo_t>);
-
-   void WriteNtuple();
-   void GetPrimGenInfo(Double_t enerPrim,G4ParticleDefinition* Part);
-
-   static HPAnalysis* getInstance();
-   void finish();
-   
-   
+  HPAnalysis();
+  ~HPAnalysis();
+  
+  void book(G4String & nameout);
+  void FillNtuple(std::vector<TrackInfo_t>);
+  
+  void WriteNtuple();
+  void GetPrimGenInfo(Double_t enerPrim,G4ParticleDefinition* Part);
+  
+  static HPAnalysis* getInstance();
+  void finish();
+  
+  
 private:
    static HPAnalysis* instance;
    
