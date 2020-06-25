@@ -1,0 +1,13 @@
+
+/control/verbose  0
+/run/verbose      0
+/tracking/verbose 0
+
+/run/initialize
+
+#We use the energy beam as the 1st random seed 
+/random/setSeeds 158 17
+
+/gun/particle proton
+/gun/energy 158 GeV
+/run/beamOn 10000
