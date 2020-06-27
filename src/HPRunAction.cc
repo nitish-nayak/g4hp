@@ -27,7 +27,8 @@ void HPRunAction::BeginOfRunAction(const G4Run* aRun)
   table_entry = CLHEP::HepRandom::getTheSeeds();
   G4long id0 = table_entry[0];
   G4long id1 = table_entry[1];
-
+  G4cout << "### Random numbers " << id0 << " "<< id1 << G4endl;
+ 
 #ifdef G4VIS_USE
   G4UImanager* UI = G4UImanager::GetUIpointer();
 

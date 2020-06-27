@@ -14,12 +14,11 @@ PWD = os.getenv("PWD")
 ##################################################
 # Job Defaults
 NPOTS           = 100
-N_JOBS          = 1
-RUN             = 1
+NJOBS           = 1
+RUNID           = 1
 OUTDIR          = "/pnfs/{EXPERIMENT}/persistent/users/{USER}/g4hp/test/".format(EXPERIMENT = os.getenv("EXPERIMENT"),
                                                                                        USER = os.getenv("USER"))
 TEMPLATE        = "{0}/macros/hp_template.mac".format(PWD)
-FILETAG         = ""
 TARFILE_NAME    = "local_install.tar.gz"
 
 ##################################################
@@ -35,7 +34,8 @@ def main():
   # scratch /pnfs area from which to send tarfile to grid
   cache_folder = CACHE_PNFS_AREA + str(random.randint(10000,99999)) + "/"
   os.mkdir(cache_folder)
-
+  os.makedirs(options.outdir)
+  
   print "\nTarring up local area..."
   make_tarfile(TARFILE_NAME, ".")
 
@@ -45,17 +45,17 @@ def main():
 
   print "\nTarball of local area:", cache_folder + TARFILE_NAME
 
-  logfile = options.outdir + "/g4hp_pC_e{INCENERGY}_{RUN}_\$PROCESS.log".format(INCENERGY = options.inc_energy,
-                                                                               RUN        = options.run_number)
-#  outname = "g4hp_pC_e{INCENERGY}_{RUN}_\$PROCESS.root".format(INCENERGY = options.incenergy,
-#                                                                               RUN        = options.run_number)
+  logfile = options.outdir + "/g4hp_pC_e{INCENERGY}_r{RUN}_j\$PROCESS.log".format(INCENERGY = options.incenergy,
+                                                                               RUN        = options.runid)
+  outfile = "g4hp_pC_e{INCENERGY}_r{RUN}_j\$PROCESS.root".format(INCENERGY = options.incenergy,
+                                                                 RUN       = options.runid)
   print "\nOutput logfile(s):",logfile
+  print "\nOutput outfile(s):",outfile
 
   submit_command = ("jobsub_submit {GRID} {MEMORY} -N {NJOBS} -d G4HP {OUTDIR} "
       "-G {EXPERIMENT} "
-      "-e INCENERGY={INCENERGY} "
-      "-e NPOTS={NPOTS} "      
-      "-e RUN={RUN} "
+      "-e RUNID={RUNID} "
+      "-e OUTFILE={OUTFILE} "
       "-f {TARFILE} "
       "-L {LOGFILE} "
       "file://{CACHE}/g4hp_job.sh".format(
@@ -63,12 +63,11 @@ def main():
                     "--resource-provides=usage_model=DEDICATED,OPPORTUNISTIC "
                     "--role=Analysis "),
       MEMORY     = "--memory 200MB ",
-      NJOBS      = options.n_jobs,
+      NJOBS      = options.njobs,
       OUTDIR     = options.outdir,
       EXPERIMENT = os.getenv("EXPERIMENT"),
-      INCENERGY  = options.inc_energy,
-      NPOTS      = options.npots,
-      RUN        = options.run_number,
+      RUNID      = options.runid,
+      OUTFILE    = outfile,
       TARFILE    = cache_folder + TARFILE_NAME,
       LOGFILE    = logfile,
       CACHE      = cache_folder)
@@ -84,28 +83,28 @@ def get_options():
 
   grid_group.add_option("--outdir",
                 default = OUTDIR,
-                help    = "Output flux histograms location. Default = %default.")
+                help    = "Output flux histograms location. Default = %default")
 
   grid_group.add_option("--template",
                 default = TEMPLATE,
-                help    = "Input macro template. Default = %default.")
+                help    = "Input macro template. Default = %default")
    
-  grid_group.add_option("--n_jobs",
-        default = N_JOBS,
-        help = "Number of g4numi jobs. Default = %default.")
+  grid_group.add_option("--njobs",
+        default = NJOBS,
+        help = "Number of g4hp jobs. Default = %default")
 
-  grid_group.add_option("--run_number",
-        default = RUN,
-        help = "Tag on the end of outfiles. Doubles as random # seed. Default = %default.")
+  grid_group.add_option("--runid",
+        default = RUNID,
+        help = "Run ID. Default = %default")
 
   grid_group.add_option('--npots',
         default = NPOTS,
-        help="Number of protons on target to simulate. Default = %default.")
+        help="Number of protons on target to simulate. Default = %default")
 
   g4hp_group    = optparse.OptionGroup(parser, "Specific G4HP Options")
   
-  g4hp_group.add_option('--inc_energy', default = INCENERGY,
-       help="Eneggy of the particel projectile. Default = %default." )
+  g4hp_group.add_option('--incenergy', default = INCENERGY,
+       help="Energy of the particle projectile. Default = %default" )
 
   parser.add_option_group(grid_group)
   parser.add_option_group(g4hp_group)
@@ -118,17 +117,16 @@ def make_macro(options):
   template_filename = options.template
   template_string   = open(template_filename, 'r').read()
   template          = string.Template(template_string)
-
-#  macro_string = template.safe_substitute(
-#    {'INCENERGY':       options.inc_energy,
-#     'OUTNAMEFILE':     outname,
-#     'NEVTS':           options.nevts
-#     }
-#    )
+  
+  macro_string = template.safe_substitute(
+    {'INCENERGY':       options.incenergy,
+     'NPOTS':           options.npots
+     }
+    )
   
   macro_name = "g4hp.mac"
   macro = open(macro_name, "w") 
-#  macro.write(macro_string)
+  macro.write(macro_string)
   macro.close()
 
   return macro_name

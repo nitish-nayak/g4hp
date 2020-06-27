@@ -18,23 +18,17 @@ ls
 
 echo
 echo "======== SETUP G4, ROOT, ETC ========"
-echo "source setup_beamsim.sh"
+echo "source setup_g4hp_cvmfs.sh"
 source setup_g4hp_cvmfs.sh
 
 echo
 echo "======== UPDATE MACRO WITH RUN NUMBER ========"
-SEED=$((RUN*10000+PROCESS))
-sed -i 's/\${INCENERGY}/'$INCENERGY'/g' g4hp.mac
-sed -i 's/\${PROCESS}/'$JOBID'/g' g4hp.mac
+sed -i 's/\${JOBID}/'$PROCESS'/g' g4hp.mac
 
 #OUTFILE="g4hp_pC_e${INCENERGY}_j${PROCESS}_r{RUN}.root"
-sed -i 's/\${OUTNAMEFILE}/'$OUTFILE'/g' g4numi.mac
+sed -i 's/\${OUTNAMEFILE}/'$OUTFILE'/g' g4hp.mac
 
-sed -i 's/\${NPOTS}/'$NPOTS'/g' g4numi.mac
-
-echo "INCENERGY=${INCENERGY}"
-echo "RUN=${RUN}"
-echo "NPOTS=${NPOTS}"
+echo "RUNID=${RUNID}"
 echo "PROCESS=$PROCESS"
 echo "OUTFILE=$OUTFILE"
 
@@ -48,5 +42,5 @@ echo "g4hp g4hp.mac"
 g4hp g4hp.mac
 
 echo
-echo "Moving output to CONDOR_DIR_G4NUMI"
-mv *.root $CONDOR_DIR_G4NUMI
+echo "Moving output to CONDOR_DIR_G4HP"
+mv *.root $CONDOR_DIR_G4HP

@@ -10,9 +10,9 @@
 # Convention: 
 #1st random seed: energy
 #2nd random seed: job number
-/gun/energy {INCENERGY} GeV 
-/random/setSeeds {INCENERGY} {JOBID}
+/gun/energy ${INCENERGY} GeV 
+/random/setSeeds ${INCENERGY} ${JOBID}
 
-/HP/run/outName {OUTNAMEFILE}
+/HP/run/outName ${OUTNAMEFILE}
 
-/run/beamOn {NPOTS}
+/run/beamOn ${NPOTS}
