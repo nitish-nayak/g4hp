@@ -16,8 +16,9 @@
 #include <map>
 #include <vector>
 
-#include "ProdTuple_t.hh"
+#include "hptuple.h"
 #include "TrackInfo_t.hh"
+#include "HPConfig.hh"
 
 class G4ParticleDefinition;
 class G4Step;
@@ -26,6 +27,9 @@ class TTree;
 class G4Track;
 class G4VTrajectory;
 
+class ProdPart;
+class HPTuple;
+
 class HPAnalysis
 {
 public:
@@ -33,7 +37,7 @@ public:
   HPAnalysis();
   ~HPAnalysis();
   
-  void book(G4String & nameout);
+  void book(const HPConfig &config);
   void FillNtuple(std::vector<TrackInfo_t>);
   
   void WriteNtuple();
@@ -47,12 +51,15 @@ private:
    static HPAnalysis* instance;
    
   char NtupleFileName[50];
-   TFile* FileNtuple;  
-   TTree* ProdTree;
-   ProdTuple_t g4Proddata; 
-   Double_t enerPrimGen;
-   G4ParticleDefinition* particle;
-
+  TFile* FileNtuple;  
+  TTree* EvtTree;
+  TTree* HPSetup;
+  
+  Double_t enerPrimGen;
+  G4ParticleDefinition* particle;
+  
+  HPTuple* t_hptuple;
+  
 };
 
 #endif 

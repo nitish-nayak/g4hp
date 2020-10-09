@@ -5,22 +5,20 @@
 #include "G4VUserDetectorConstruction.hh"
 #include "globals.hh"
 #include "G4Material.hh"
+#include "HPConfig.hh"
 
 class G4LogicalVolume;
-class HPDetectorMessenger;
 
 class HPDetectorConstruction : public G4VUserDetectorConstruction
 {
 public:
 
-  HPDetectorConstruction();
+  HPDetectorConstruction(const Target &t);
   virtual ~HPDetectorConstruction();
 
 public:
 
   G4VPhysicalVolume* Construct();
-
-  void SetTargetMaterial(const G4String&);
 
   void UpdateGeometry();
 
@@ -38,8 +36,6 @@ private:
 
   G4LogicalVolume* logicTarget;
   G4LogicalVolume* logicWorld;
-
-  HPDetectorMessenger* detectorMessenger;
 
 };
 

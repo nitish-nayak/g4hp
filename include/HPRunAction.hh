@@ -5,24 +5,23 @@
 #include "G4UserRunAction.hh"
 #include "G4Run.hh"
 #include "globals.hh"
-
-class HPRunActionMessenger;
+#include "HPConfig.hh"
 
 class HPRunAction : public G4UserRunAction
 {
 public:
   
-  HPRunAction();
+  HPRunAction(const HPConfig &config_) : config(config_) {};
   ~HPRunAction();
-  HPRunActionMessenger* raMessenger;
   
 public: 
   
   void BeginOfRunAction(const G4Run*);
   void EndOfRunAction(const G4Run*);
-  void SetOutputFileName(const G4String&);
-  
-  G4String fileName;
+
+private:
+
+  HPConfig config;
   
 };
 
