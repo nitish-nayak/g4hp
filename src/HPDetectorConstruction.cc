@@ -1,6 +1,5 @@
 
 #include "HPDetectorConstruction.hh"
-#include "HPDetectorMessenger.hh"
 
 #include "G4Tubs.hh"
 #include "G4LogicalVolume.hh"
@@ -24,20 +23,19 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-HPDetectorConstruction::HPDetectorConstruction()
+HPDetectorConstruction::HPDetectorConstruction(const Target &t)
 {
   logicTarget = 0;
   logicWorld  = 0;
-  detectorMessenger = new HPDetectorMessenger(this);
 
   //Default is carbon
-  TargetZ = 6.;
-  TargetA = 12.01*CLHEP::g/CLHEP::mole;
-  TargetDensity = 1.78*CLHEP::g/CLHEP::cm3;
+  TargetZ = t.Z;
+  TargetA = t.A*CLHEP::g/CLHEP::mole;
+  TargetDensity = t.density*CLHEP::g/CLHEP::cm3;
 
-  radius = 0.3*CLHEP::cm;
+  radius = t.radius*CLHEP::cm;
 
-  targetMaterial = new G4Material("TargetMat",TargetZ, TargetA, TargetDensity);
+  targetMaterial = new G4Material(t.name,TargetZ, TargetA, TargetDensity);
   worldMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_AIR");
 
 }
@@ -46,7 +44,6 @@ HPDetectorConstruction::HPDetectorConstruction()
 
 HPDetectorConstruction::~HPDetectorConstruction()
 { 
-  delete detectorMessenger;
 }
 
 G4VPhysicalVolume* HPDetectorConstruction::Construct()
@@ -59,46 +56,24 @@ G4VPhysicalVolume* HPDetectorConstruction::Construct()
   G4SolidStore::GetInstance()->Clean();
 
   // Sizes
-  G4double worldR  = radius + CLHEP::cm;
+  G4double worldR       = radius + CLHEP::cm;
   G4double targetLenght = 0.7*CLHEP::cm*0.5; 
-  G4double worldZ  = targetLenght + CLHEP::cm;
+  G4double worldZ       = targetLenght + CLHEP::cm;
 
   // World
-  //
-  G4Tubs* solidW = new G4Tubs("World",0.,worldR,worldZ,0.,CLHEP::twopi);
-  logicWorld = new G4LogicalVolume( solidW,worldMaterial,"World");
+  G4Tubs* solidW           = new G4Tubs("World",0.,worldR,worldZ,0.,CLHEP::twopi);
+  logicWorld               = new G4LogicalVolume( solidW,worldMaterial,"World");
   G4VPhysicalVolume* world = new G4PVPlacement(0,G4ThreeVector(),
-                                       logicWorld,"World",0,false,0);
+					       logicWorld,"World",0,false,0);
   // Target volume
-  //
   G4Tubs* solidT = new G4Tubs("Target",0.,radius,targetLenght,0.,CLHEP::twopi);
-  logicTarget = new G4LogicalVolume( solidT,targetMaterial,"Target");
+  logicTarget    = new G4LogicalVolume( solidT,targetMaterial,"Target");
   new G4PVPlacement(0,G4ThreeVector(),logicTarget,"Target",logicWorld,false,0);
-
-  // colors
-  G4VisAttributes zero = G4VisAttributes::Invisible;
-  logicWorld->SetVisAttributes(&zero);
-
-  G4VisAttributes regCcolor(G4Colour(0., 0.3, 0.7));
-  logicTarget->SetVisAttributes(&regCcolor);
-
+  
+  //See this (Leo)??
   G4cout << *(G4Material::GetMaterialTable()) << G4endl;
 
   return world;
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void HPDetectorConstruction::SetTargetMaterial(const G4String& mat)
-{
-  // search the material by its name
-  G4Material* material = G4NistManager::Instance()->FindOrBuildMaterial(mat);
-
-  if (material && material != targetMaterial) {
-    targetMaterial = material;
-    if(logicTarget) logicTarget->SetMaterial(targetMaterial);
-    G4RunManager::GetRunManager()->PhysicsHasBeenModified();
-  }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

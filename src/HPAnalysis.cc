@@ -42,39 +42,48 @@ HPAnalysis* HPAnalysis::getInstance()
   return instance;
 }
 
-void HPAnalysis::book(G4String & nameout)
+void HPAnalysis::book(const HPConfig &config)
 {
-  FileNtuple = new TFile(nameout.c_str(), "RECREATE","hadron from p+C ntuple");   
-  ProdTree = new TTree("HPinfo","g4hp info from hadron + target");
+  FileNtuple = new TFile((config.getOutputDir() + "/" + config.getOutputFile()).c_str(), 
+			 "RECREATE",
+			 "hadron from h+C ntuple");   
+
+  EvtTree = new TTree("hAinfoTree","g4hp info from h+A");
   
-  ProdTree->Branch("npart",&g4Proddata.NPart,"NPart/I");
-  ProdTree->Branch("pdg", &g4Proddata.PDG,"PDG[NPart]/I");
-  ProdTree->Branch("x",  &g4Proddata.X,"X[NPart][3]/D");
-  ProdTree->Branch("p",  &g4Proddata.P,"P[NPart][4]/D");
-  ProdTree->Branch("xf", &g4Proddata.XF,"XF[NPart]/D");
-  ProdTree->Branch("pt", &g4Proddata.PT,"PT[NPart]/D");
-  ProdTree->Branch("ff", &g4Proddata.FF,"FF[NPart]/O");
+  EvtTree->Branch("hAinfo","HPTuple",&t_hptuple,32000,99); 
+  HPSetup = config.createTree();
+  
 }
 
 void HPAnalysis::finish()
 {
-    FileNtuple->cd();   
-    ProdTree->Write();
+    FileNtuple->cd(); 
+    
+    EvtTree->Write();
+    HPSetup->Write();
+
     FileNtuple->Close();
     delete FileNtuple;
 }
 
-void HPAnalysis::FillNtuple(std::vector<TrackInfo_t> trackInfoVec)
-{
-  //Calculation using a proton projectile 
-  //work to do: genealize to any projectile (Leo, June25, 2020)
-  G4RunManager* pRunManager = G4RunManager::GetRunManager();
-  g4Proddata.NPart= trackInfoVec.size();
+void HPAnalysis::FillNtuple(std::vector<TrackInfo_t> trackInfoVec){
 
-  Int_t partNum   = 0;
+  std::vector<ProdPart> tvec_prodpart;
+  tvec_prodpart.clear();
+  
   Double_t XF,PT,Ecm,PL,beta,gamma,Pxx,Pyy,Pzz,PartE;
   Double_t BeamEnergy = enerPrimGen; //got from Primary Generator
-  Double_t massProton = CLHEP::proton_mass_c2;
+  
+  Double_t massProton    = CLHEP::proton_mass_c2;
+  Double_t massPionPlus  = G4PionPlus::PionPlus()->GetPDGMass();
+  Double_t massPionMinus = G4PionMinus::PionMinus()->GetPDGMass();
+
+  Double_t massInc = 0;  
+  G4String pname   = particle->GetParticleName();
+  if( pname == "proton" ) massInc = massProton;
+  else if( pname == "pi+"    ) massInc = massPionPlus;
+  else if( pname == "pi-"    ) massInc = massPionMinus;
+  else exit (1);
 
   std::vector<TrackInfo_t>::iterator iteTrackInfo = trackInfoVec.begin();
   for(;iteTrackInfo != trackInfoVec.end();iteTrackInfo++){  
@@ -82,31 +91,27 @@ void HPAnalysis::FillNtuple(std::vector<TrackInfo_t> trackInfoVec)
     Pxx = (*iteTrackInfo).Mom.X();
     Pyy = (*iteTrackInfo).Mom.Y();
     Pzz = (*iteTrackInfo).Mom.Z();
+    //
     PT    = sqrt(pow(Pxx,2.0)+pow(Pyy,2.0));
-    Ecm   = sqrt(2.0*pow(massProton,2.0)+2.*BeamEnergy*massProton);
-    beta  = sqrt(pow(BeamEnergy,2.0)-pow(massProton,2.0))/(BeamEnergy+massProton);
-    gamma = 1./sqrt(1.-pow(beta,2.0));
+    Ecm   = sqrt(pow(massInc,2.0) + pow(massProton,2.0) + 2.*BeamEnergy*massProton);
+    gamma = (BeamEnergy + massProton) / Ecm;
+    beta  = sqrt(pow(gamma,2)-1) / gamma;
     PL    = gamma*(Pzz-beta*PartE);    
     XF    = 2.*PL/Ecm;
+    //
+    double tpos[3] = {(*iteTrackInfo).Pos.X(), (*iteTrackInfo).Pos.Y(), (*iteTrackInfo).Pos.Z()};
+    double tmom[4] = {Pxx,Pyy,Pzz,PartE};
+    
+    ProdPart t_prodpart((*iteTrackInfo).PDGcode, tpos,tmom, XF,PT,(*iteTrackInfo).FromFast);
 
-    g4Proddata.PDG[partNum] = (*iteTrackInfo).PDGcode;
-    g4Proddata.X[partNum][0]= (*iteTrackInfo).Pos.X();
-    g4Proddata.X[partNum][1]= (*iteTrackInfo).Pos.Y();
-    g4Proddata.X[partNum][2]= (*iteTrackInfo).Pos.Z();
-    g4Proddata.P[partNum][0]= Pxx;
-    g4Proddata.P[partNum][1]= Pyy;
-    g4Proddata.P[partNum][2]= Pzz;
-    g4Proddata.P[partNum][3]= PartE;
-    g4Proddata.PT[partNum]  = PT;
-    g4Proddata.XF[partNum]  = XF;
-    g4Proddata.FF[partNum]  = (*iteTrackInfo).FromFast;
-     
-    partNum++; 
+    tvec_prodpart.push_back(t_prodpart);
   }
-  if (g4Proddata.NPart>0)WriteNtuple();
+  t_hptuple->prodpart = tvec_prodpart;
+  
+  if (tvec_prodpart.size() > 0) WriteNtuple();
 }
 void HPAnalysis::WriteNtuple(){    
-    ProdTree->Fill();   
+  EvtTree->Fill();   
 }
 void HPAnalysis::GetPrimGenInfo(Double_t enerPrim,G4ParticleDefinition* Part){
   enerPrimGen = enerPrim; 

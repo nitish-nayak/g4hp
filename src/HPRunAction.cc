@@ -1,19 +1,13 @@
 
-#include "HPRunActionMessenger.hh"
 #include "HPRunAction.hh"
 
 #include "G4UImanager.hh"
 #include "G4VVisManager.hh"
 #include "G4NistManager.hh"
 #include "G4Element.hh"
+
 #include "HPAnalysis.hh"
 #include "Randomize.hh"
-
-HPRunAction::HPRunAction()
-{
-  raMessenger = new HPRunActionMessenger(this);
-  fileName    = "noname.root";
-}
 
 HPRunAction::~HPRunAction()
 {}
@@ -27,7 +21,7 @@ void HPRunAction::BeginOfRunAction(const G4Run* aRun)
   table_entry = CLHEP::HepRandom::getTheSeeds();
   G4long id0 = table_entry[0];
   G4long id1 = table_entry[1];
-  G4cout << "### Random numbers " << id0 << " "<< id1 << G4endl;
+  G4cout << "### Random numbers check: " << id0 << " "<< id1 << G4endl;
  
 #ifdef G4VIS_USE
   G4UImanager* UI = G4UImanager::GetUIpointer();
@@ -39,9 +33,9 @@ void HPRunAction::BeginOfRunAction(const G4Run* aRun)
   }
 #endif
 
-HPAnalysis* analysis = HPAnalysis::getInstance();
-  analysis->book(fileName);
-
+  HPAnalysis* analysis = HPAnalysis::getInstance();
+  analysis->book(config);
+  
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
@@ -55,12 +49,7 @@ void HPRunAction::EndOfRunAction(const G4Run*)
     G4UImanager::GetUIpointer()->ApplyCommand("/vis/viewer/update");
 #endif
 
-HPAnalysis* analysis = HPAnalysis::getInstance();
+  HPAnalysis* analysis = HPAnalysis::getInstance();
   analysis->finish();
 
 }
-void HPRunAction::SetOutputFileName(const G4String& nfile)
-{
-  fileName = nfile;
-}
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....

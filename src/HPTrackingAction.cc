@@ -81,7 +81,10 @@ G4TrackVector* secondaries = fpTrackingManager->GimmeSecondaries();
 	// secondary was created in a proton inelastic interaction
 	// OR if the parent was a quickly decaying particle in the 
 	// primary chain
-	bool inel=secondary->GetCreatorProcess()->GetProcessName()=="protonInelastic";
+	bool inel = (secondary->GetCreatorProcess()->GetProcessName()=="protonInelastic") ||
+	  (secondary->GetCreatorProcess()->GetProcessName()=="pi+Inelastic") || 
+	  (secondary->GetCreatorProcess()->GetProcessName()=="pi-Inelastic");
+	
 	if( (incoming_primary && inel)  
 	    || ( info->primary_chain && info->fast_decay)){
 	  infoNew->primary_chain=true;
