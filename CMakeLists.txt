@@ -8,67 +8,44 @@ SET(CMAKE_CXX_COMPILER "$ENV{GCC_FQ_DIR}/bin/g++")
 
 project(g4hp C CXX)
 
-
 #----------------------------------------------------------------------------
-# Find Geant4 package, activating all available UI and Vis drivers by default
-# You can set WITH_GEANT4_UIVIS to OFF via the command line or ccmake/cmake-gui
-# to build a batch mode only executable
-#
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} $ENV{G4LIB} $ENV{ROOTSYS}/etc/cmake)
-set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} $ENV{G4LIB} $ENV{ROOTSYS}/etc/cmake)
+# Setup geant4 and root
 #
 find_package(Geant4 REQUIRED)
-#
-# root..
-#
-find_package(ROOT REQUIRED)
-include_directories(${ROOT_INCLUDE_DIR}) # should do the trick, but may be not..Needt root v5_34_25a or later
-include_directories(${ROOT_LIBRARY_DIR})
-include_directories($ENV{ROOTSYS}/include ) #just to make sure..	    
-#
-#----------------------------------------------------------------------------
-# Setup Geant4 include directories and compile definitions
-#
 include(${Geant4_USE_FILE})
+find_package(ROOT REQUIRED)
 
 #----------------------------------------------------------------------------
 # Locate sources and headers for this project
 #
 include_directories(${PROJECT_SOURCE_DIR}/include 
-                    ${Geant4_INCLUDE_DIR} 
+		    ${Geant4_INCLUDE_DIR} 
 		    $ENV{DK2NU_FQ_DIR}/include
-		    ${ROOT_INCLUDE_DIR})
+		    $ENV{ROOTSYS}/include
+		    )
 
 file(GLOB sources  ${PROJECT_SOURCE_DIR}/src/*.cc)
 file(GLOB hheaders ${PROJECT_SOURCE_DIR}/include/*.hh)
+file(GLOB headers  ${PROJECT_SOURCE_DIR}/include/*.h)
 
-SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++1y -g -rdynamic " )
-#
-# At last but not least, CLHEP
-#
-SET(CLHEPLIBDIR $ENV{CLHEP_LIB_DIR})
-#
-#MESSAGE(STATUS ROOT_LIBRARIES = ${ROOT_LIBRARIES})
-#----------------------------------------------------------------------------
-# Add the executable, and link it to the Geant4 libraries
-#
-link_directories(${CLHEPLIBDIR}  $ENV{DK2NU_FQ_DIR}/lib ${PROJECT_SOURCE_DIR}/build)
-#
+set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -g" )
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build) # just for libg4hpDict.so
-#	
+#----------------------------------------------------------------------------
+#g4hpCint
 #
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/g4hpCint.cc COMMAND rootcint -f 
-                   g4hpCint.cc -c include/TrackInfo_t.hh include/ProdTuple_t.hh Linkdef.h)
-		   
+                   g4hpCint.cc -c include/hptuple.h include/TrackInfo_t.hh Linkdef.h)
 add_library(g4hpDict SHARED ${PROJECT_SOURCE_DIR}/g4hpCint.cc
-            ${PROJECT_SOURCE_DIR}/src/TrackInfo_t.cc 
-	    ${PROJECT_SOURCE_DIR}/src/ProdTuple_t.cc )
-#	    
-add_executable(g4hp  g4hp.cc ${sources} ${hheaders} )
+	    ${PROJECT_SOURCE_DIR}/src/TrackInfo_t.cc 
+	    ${PROJECT_SOURCE_DIR}/src/hptuple.cc )
 
-target_link_libraries(g4hp g4hpDict ${Geant4_LIBRARIES} libdk2nuTree.so ${root_LIBRARIES} )
-				  
+#----------------------------------------------------------------------------
+#Build g4hp
+#
+link_directories($ENV{CLHEP_LIB_DIR} $ENV{DK2NU_FQ_DIR}/lib ${PROJECT_SOURCE_DIR}/build)
+add_executable(g4hp g4hp.cc ${sources} ${headers} ${hheaders} ${physics} )
+target_link_libraries(g4hp g4hpDict ${Geant4_LIBRARIES} libdk2nuTree.so ${ROOT_LIBRARIES} )
+
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
