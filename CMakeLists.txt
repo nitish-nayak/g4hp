@@ -34,7 +34,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build) # just for libg4
 #g4hpCint
 #
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/g4hpCint.cc COMMAND rootcint -f 
-                   g4hpCint.cc -c include/hptuple.h include/TrackInfo_t.hh Linkdef.h)
+                   g4hpCint.cc -c include/hptuple.hh include/TrackInfo_t.hh Linkdef.h)
 add_library(g4hpDict SHARED ${PROJECT_SOURCE_DIR}/g4hpCint.cc
 	    ${PROJECT_SOURCE_DIR}/src/TrackInfo_t.cc 
 	    ${PROJECT_SOURCE_DIR}/src/hptuple.cc )
