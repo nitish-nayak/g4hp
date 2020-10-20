@@ -26,11 +26,13 @@
 #include "G4Run.hh"
 #include "G4Proton.hh"
 
+#include "hptuple.hh"
+
 using namespace std;
 
 HPAnalysis* HPAnalysis::instance = 0;
 
-HPAnalysis::HPAnalysis()
+HPAnalysis::HPAnalysis() :t_hptuple(0)
 {}
 
 HPAnalysis::~HPAnalysis()

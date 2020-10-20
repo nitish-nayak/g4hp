@@ -16,7 +16,6 @@
 #include <map>
 #include <vector>
 
-#include "hptuple.h"
 #include "TrackInfo_t.hh"
 #include "HPConfig.hh"
 
