@@ -7,8 +7,7 @@
 
 #include "HPDetectorConstruction.hh"
 
-#include "FTFP_BERT.hh"
-#include "QGSP_BERT.hh"
+#include "G4PhysListFactory.hh"
 
 #include "HPPrimaryGeneratorAction.hh"
 
@@ -35,22 +34,17 @@ int main(int argc,char** argv) {
   //set mandatory initialization classes
   runManager->SetUserInitialization(new HPDetectorConstruction(config.getTarget()));
   
-  if(config.getphysicsList()=="QGSP_BERT"){  
-    QGSP_BERT* qgsp_bert_List = new QGSP_BERT;
-    std::cout<<"=> Actual physics list used in the run manager: "<<
-      config.getphysicsList()<<std::endl;
-    runManager->SetUserInitialization(qgsp_bert_List);    
+  G4PhysListFactory factory;
+  G4VModularPhysicsList *phys = 0;
+  if(factory.IsReferencePhysList(config.getphysicsList())){
+    phys = factory.GetReferencePhysList(config.getphysicsList());
   }
-  else if(config.getphysicsList()=="FTFP_BERT"){  
-    FTFP_BERT* ftfp_bert_List = new FTFP_BERT;
-    std::cout<<"=> Actual physics list used in the run manager: "<<
-      config.getphysicsList()<<std::endl;
-    runManager->SetUserInitialization(ftfp_bert_List);    
+  else {
+    G4cout << "Couldn't find physics list name " << config.getphysicsList() << G4endl;
+    G4cout << "Exiting" << G4endl;
+    exit(0);
   }
-  else{
-    std::cout<<"=> This code currently only support QGSP_BERT and FTFP_BERT"<<std::endl;
-    exit (1);
-  }
+  runManager->SetUserInitialization(phys); 
   
   runManager->SetUserAction(new HPPrimaryGeneratorAction());
   
