@@ -3,6 +3,7 @@
 echo
 echo "======== cd to CONDOR_DIR_INPUT ========"
 cd $CONDOR_DIR_INPUT
+pwd
 
 echo
 echo "======== ls ========"
@@ -17,30 +18,34 @@ echo "======== Done untarring. ls ========"
 ls
 
 echo
-echo "======== SETUP G4, ROOT, ETC ========"
+echo "======== SETUP ROOT, BOOST and DK2NU ========"
 echo "source setup_g4hp_cvmfs.sh"
 source setup_g4hp_cvmfs.sh
 
-echo
-echo "======== UPDATE MACRO WITH RUN NUMBER ========"
-sed -i 's/\${JOBID}/'$PROCESS'/g' g4hp.mac
-
-#OUTFILE="g4hp_pC_e${INCENERGY}_j${PROCESS}_r{RUN}.root"
-sed -i 's/\${OUTNAMEFILE}/'$OUTFILE'/g' g4hp.mac
-
-echo "RUNID=${RUNID}"
+echo "PHYSICS=${PHYSICS}"
+echo "PARTICLE=${PARTICLE}"
+echo "ENERGY=${ENERGY}"
+echo "TARGET=${TARGET}"
+echo "NEVTS=${NEVTS}"
+echo "NUMRUN=${NUMRUN}"
+echo "TUPLEFILE=${TUPLEFILE}"
 echo "PROCESS=$PROCESS"
-echo "OUTFILE=$OUTFILE"
 
-echo
-echo "======== MACRO CONTENT ========"
-cat g4hp.mac
+dirOut="tmp_griddir${RANDOM}"
 
-echo
-echo "======== EXECUTING g4hp ========"
-echo "g4hp g4hp.mac"
-g4hp g4hp.mac
+#making the run number: 
+THISPROCESS=${PROCESS}
+run=$(( 1000000 * ${NUMRUN}  + THISPROCESS))
 
+echo "./g4hp -k ${dirOut} -t ${TARGET} -p ${PARTICLE} -n ${NEVTS} -f ${TUPLEFILE} -x ${run} -e ${ENERGY} -l ${PHYSICS} -y"
+./g4hp -k ${dirOut} -t ${TARGET} -p ${PARTICLE} -n ${NEVTS} -f ${TUPLEFILE} -x ${run} -e ${ENERGY} -l ${PHYSICS} -y
+
+echo "Current content of the outdir:"
+ls ${dirOut}/
+
+echo "Current content of the dir:"
+ls
 echo
-echo "Moving output to CONDOR_DIR_G4HP"
-mv *.root $CONDOR_DIR_G4HP
+echo "Moving output to CONDOR_DIR_G4HP: "
+echo "=> CONDOR_DIR_G4HP: $CONDOR_DIR_G4HP"
+mv ${dirOut}/*.root $CONDOR_DIR_G4HP
