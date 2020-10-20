@@ -1,5 +1,5 @@
 
-#include "hptuple.h"
+#include "hptuple.hh"
 #include "iostream"
 
 ClassImp(ProdPart)
