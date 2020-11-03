@@ -18,8 +18,8 @@ libhputils.so: $(OBJS_LIB)
 programs: $(PROGS)
 	echo making $(PROGS)
 
-$(PROGS): % : %.o $(G4WORKDIR)/build/libg4hpDict.so libhputils.so
-	$(CC) -Wall -o $@ $< $(DEPLIBS) -L$(G4WORKDIR)/build -lg4hpDict libhputils.so
+$(PROGS): % : %.o $(G4WORKDIR)/build/libg4hpDict.so $(G4WORKDIR)/ana/libhputils.so
+	$(CC) -Wall -o $@ $< $(DEPLIBS) -L$(G4WORKDIR)/build -L$(G4WORKDIR)/ana -lg4hpDict -lhputils
 
 %.o: %.C
 	$(CC) $(COPTS) $(INCLUDES) -c -o $@ $<
