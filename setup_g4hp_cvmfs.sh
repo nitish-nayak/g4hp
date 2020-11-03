@@ -79,7 +79,7 @@ if [ -z "${G4LBNE_IS_SETUP}" ]; then
     echo G4WORKDIR is ${G4WORKDIR}
     export LD_LIBRARY_PATH=${G4LBNE_DIR}:${LD_LIBRARY_PATH}
     export LD_LIBRARY_PATH=${G4LBNE_DIR}/shared_libraries:${LD_LIBRARY_PATH}
-    export LD_LIBRARY_PATH=${G4WORKDIR}/build:${LD_LIBRARY_PATH}
+    export LD_LIBRARY_PATH=${G4WORKDIR}/build:${G4WORKDIR}/ana:${LD_LIBRARY_PATH}
 
     echo LD_LIBRARY_PATH is ${LD_LIBRARY_PATH} 
 
