@@ -33,7 +33,13 @@ void ExampleOfUsingFunctions(){
   std::cout<<"xF "<<get_xf("cpi",60,"cpi",18,0.03)<<std::endl;
   std::cout<<"pT "<<get_pt(18,0.03)<<std::endl;
   
-  
+  //Given the integrated multiplcity divided by the bin momentum and solid angle widths
+  // pi+ + C -> pi+ X at 12 GeV, Nuclear Physics, Section A, Volume 821, Issue 1, p. 118-192.
+  //Data: 0.27 barn/GeV/sr for momentum in [3.5,4]GeV/c and angle in [50,100]mrad
+  std::cout<<""<<std::endl;std::cout<<"Example for pi+ + C -> pi+ X at 12 GeV"<<std::endl;
+  std::cout<<"<f>: "<<get_avef("XS/DPDO",270,12,"cpi",3.5,4, 0.05,0.10)<<std::endl;
+  std::cout<<"xF "<<get_xf("cpi",12,"cpi",3.75,0.07
+
 }
 
 

@@ -137,6 +137,14 @@ double avef3(double hh, double inc_ener, std::string sec_part, double initial_mo
   return (hh * ival[0] * ival[2] * xsprod_na61_incpi)/ (2. * pival * ival[4] * ival[5] );
   
 }
+//Calculates average invariant cross section from
+//integrated cross section divided by bin momentum and solid angle widths
+double avef4(double hh, double inc_ener, std::string sec_part, double initial_mom, double final_mom, double initial_ang, double final_ang){
+  
+  std::vector<double> ival = get_initialValues(sec_part,initial_mom,final_mom,initial_ang,final_ang);  
+  return (hh * ival[0]) / (ival[4]);
+  
+}
 
 //Get average invariant cross section given 
 //Inputs: - Mode: XS/DP, XS/DPDA or N/DPDA
@@ -146,8 +154,9 @@ double avef3(double hh, double inc_ener, std::string sec_part, double initial_mo
 //        - initial and final momentum and angle
 double get_avef(std::string dtmode, double hh, double inc_ener, std::string sec_part, 
 		double initial_mom, double final_mom, double initial_ang, double final_ang){  
-  if(dtmode=="XS/DP")  return avef1(hh,inc_ener,sec_part,initial_mom,final_mom,initial_ang,final_ang);
-  if(dtmode=="XS/DPDA")return avef2(hh,inc_ener,sec_part,initial_mom,final_mom,initial_ang,final_ang);
-  if(dtmode=="N/DPDA") return avef3(hh,inc_ener,sec_part,initial_mom,final_mom,initial_ang,final_ang);
+  if(dtmode=="XS/DP"  ) return avef1(hh,inc_ener,sec_part,initial_mom,final_mom,initial_ang,final_ang);
+  if(dtmode=="XS/DPDA") return avef2(hh,inc_ener,sec_part,initial_mom,final_mom,initial_ang,final_ang);
+  if(dtmode=="N/DPDA" ) return avef3(hh,inc_ener,sec_part,initial_mom,final_mom,initial_ang,final_ang);
+  if(dtmode=="XS/DPDO") return avef4(hh,inc_ener,sec_part,initial_mom,final_mom,initial_ang,final_ang);
   return -1;
 }
