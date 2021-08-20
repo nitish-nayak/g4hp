@@ -22,7 +22,7 @@ void ExampleOfUsingFunctions(){
   //Data: 12.9 mb/rad/(GeV/c) for momentum in [4.8,5.6]GeV/c and angle in [20,40]mrad
   std::cout<<""<<std::endl;std::cout<<"Example for p + C -> K+ X at 31 GeV"<<std::endl;
   std::cout<<"<f>: "<<get_avef("XS/DPDA",12.9,31,"cka",4.8,5.6, 0.02,0.04)<<std::endl;
-  std::cout<<"xF "<<get_xf("prt",31,"cka",4.8,0.03)<<std::endl;
+  std::cout<<"xF "<<get_xf("prt",31,"cka",5.2,0.03)<<std::endl;
   std::cout<<"pT "<<get_pt(5.2,0.03)<<std::endl;
   
   //Given the integrated multiplcity divided by the bin momentum and angle widths
