@@ -28,9 +28,9 @@ if [ -z "${G4LBNE_IS_SETUP}" ]; then
     esac
     echo experiment is $GROUP
 
-     
-    export LBNE_PRODUCT_DIR=/cvmfs/fermilab.opensciencegrid.org/products/larsoft/
-    source /cvmfs/fermilab.opensciencegrid.org/products/larsoft/setup
+    
+    export LBNE_PRODCUT_DIR=/cvmfs/larsoft.opensciencegrid.org/products/
+    source /cvmfs/larsoft.opensciencegrid.org/products/setup
     setup cmake v3_14_3
 #g4 v4_10_3_p03b clhep depend same as root version setup by dk2nu
     setup geant4 v4_10_3_p03b -q e15:prof
