@@ -14,7 +14,7 @@ if [ -z "${G4LBNE_IS_SETUP}" ]; then
             export EXPERIMENT=argoneut
             ;;
         uboone*)
-            export GROUP=microboone
+            export GROUP=uboone
             export EXPERIMENT=uboone
             ;;
         lbne*)
@@ -30,13 +30,16 @@ if [ -z "${G4LBNE_IS_SETUP}" ]; then
 
     
     export LBNE_PRODCUT_DIR=/cvmfs/larsoft.opensciencegrid.org/products/
-    source /cvmfs/larsoft.opensciencegrid.org/products/setup
+    # source /cvmfs/larsoft.opensciencegrid.org/products/setup
+    source /cvmfs/fermilab.opensciencegrid.org/products/genie/bootstrap_genie_ups.sh
     setup cmake v3_14_3
 #g4 v4_10_3_p03b clhep depend same as root version setup by dk2nu
-    setup geant4 v4_10_3_p03b -q e15:prof
+    # setup geant4 v4_10_3_p03b -q e15:prof
+    setup geant4 v4_10_4_p02d -q e19:prof
     setup fftw v3_3_6_pl2 -q prof
     setup python v2_7_14
-    setup dk2nu v01_05_01b -q e15:prof
+    # setup dk2nu v01_05_01b -q e15:prof
+    setup dk2nudata v01_08_00g -q e19:prof
     unset G4BIN
 
 ##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -79,10 +82,11 @@ if [ -z "${G4LBNE_IS_SETUP}" ]; then
     echo G4WORKDIR is ${G4WORKDIR}
     export LD_LIBRARY_PATH=${G4LBNE_DIR}:${LD_LIBRARY_PATH}
     export LD_LIBRARY_PATH=${G4LBNE_DIR}/shared_libraries:${LD_LIBRARY_PATH}
+    export LD_LIBRARY_PATH=${DK2NU}/lib:${LD_LIBRARY_PATH}
     export LD_LIBRARY_PATH=${G4WORKDIR}/build:${G4WORKDIR}/ana:${LD_LIBRARY_PATH}
 
     echo LD_LIBRARY_PATH is ${LD_LIBRARY_PATH} 
-
+    export LIBRARY_PATH=$LIBRARY_PATH:$LD_LIBRARY_PATH
 
     
     #

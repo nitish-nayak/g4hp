@@ -1,0 +1,8 @@
+CMakeCache.txt
+CMakeFiles/
+Makefile
+build/
+cmake_install.cmake
+g4hp
+g4hpCint.cc
+*.pcm
