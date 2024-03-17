@@ -13,7 +13,7 @@ PWD = os.getenv("PWD")
 # Job Defaults
 ##################################################
 NJOBS       = 3
-OUTDIR       = "/pnfs/{EXPERIMENT}/persistent/users/{USER}/testg4hp/".format(EXPERIMENT = os.getenv("EXPERIMENT"),USER = os.getenv("USER"))
+OUTDIR       = "/pnfs/{EXPERIMENT}/persistent/users/{USER}/g4hp/".format(EXPERIMENT = os.getenv("EXPERIMENT"),USER = os.getenv("USER"))
 NUMRUN       = 1
 TARFILE_NAME = "local_install.tar.gz"
 #####
@@ -21,7 +21,7 @@ ENERGY       = "158"
 TARGET       = "C"
 PARTICLE     = "proton"
 NEVTS        = "10000"
-PHYSICS      = "QGSP_BERT"
+PHYSICS      = "FTFP_BERT"
 ##################################################
 
 def main():
@@ -32,13 +32,13 @@ def main():
   
   os.makedirs(options.outdir)
 
-  print "\nTarring up local area..."
+  print("\nTarring up local area...")
   make_tarfile(TARFILE_NAME, ".")
 
   shutil.move(TARFILE_NAME,    cache_folder) 
   shutil.copy("g4hp_job.sh", cache_folder)
   
-  print "\nTarball of local area:", cache_folder + TARFILE_NAME
+  print("\nTarball of local area:", cache_folder + TARFILE_NAME)
 
   logfile = options.outdir + "/g4hp_p{PARTICLE}_e{ENERGY}_t{TARGET}_e{NEVTS}_r{NUMRUN}_l{PHYSICS}_\$PROCESS.log".format(PARTICLE=options.particle,
                                                                                                                         ENERGY=options.energy,
@@ -53,10 +53,10 @@ def main():
                                                                                                          NUMRUN=options.numrun,
                                                                                                          PHYSICS=options.physics)
   
-  print "\nOutput logfile(s):",logfile
+  print("\nOutput logfile(s):",logfile)
 
   submit_command = ("jobsub_submit {GRID} {MEMORY} -N {NJOBS} -d G4HP {OUTDIR} "
-      "-G dune --expected-lifetime=long "
+      "-G uboone --expected-lifetime=long "
       "-e PHYSICS={PHYSICS} " 
       "-e PARTICLE={PARTICLE} " 
       "-e ENERGY={ENERGY} " 
@@ -67,7 +67,7 @@ def main():
       "-f {TARFILE} "
       "-L {LOGFILE} "
       "file://{CACHE}/g4hp_job.sh".format(
-      GRID       = ("--OS=SL7 -g "
+      GRID       = ("--OS=SL7 "
                     "--resource-provides=usage_model=DEDICATED,OPPORTUNISTIC "
                     "--role=Analysis "),
       MEMORY     = "--memory 1200MB ",
@@ -86,7 +86,7 @@ def main():
   )
 
   #Ship it
-  print "\nSubmitting to grid:\n"+submit_command+"\n"
+  print("\nSubmitting to grid:\n"+submit_command+"\n")
   status = subprocess.call(submit_command, shell=True)
 
 def get_options():
