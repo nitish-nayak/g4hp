@@ -33,9 +33,10 @@ const Double_t mPion    = 0.13957;
 const Double_t mKaon    = 0.493667;
 const Double_t mProton  = 0.938272;
 const Double_t mNeutron = 0.939565;
+const Double_t mKaon0   = 0.497611; 
 
-const Int_t Npart = 6;
-const std::string spart[Npart] = {"pip","pim","kap","kam","prt","neu"};
+const Int_t Npart = 8; //6
+const std::string spart[Npart] = {"pip","pim","kap","kam","klong","kshort","prt","neu"};
 
 using std::cout;
 using std::endl;
@@ -112,6 +113,7 @@ Double_t getEnergy(Double_t beam_mom,Double_t xfey,Double_t ptrans,std::string p
   Double_t mPart = 0; 
   if(partname=="pip" || partname=="pim")mPart = mPion;
   else if(partname=="kap" || partname=="kam")mPart = mKaon;
+  else if(partname=="klong" || partname=="kshort")mPart = mKaon0;
   else if(partname=="prt")mPart = mProton;
   else if(partname=="neu")mPart = mNeutron;
   else {
@@ -132,6 +134,7 @@ Double_t getPz(Double_t beam_mom,Double_t xfey,Double_t ptrans,std::string partn
   Double_t mPart = 0; 
   if(partname=="pip" || partname=="pim")mPart = mPion;
   else if(partname=="kap" || partname=="kam")mPart = mKaon;
+  else if(partname=="klong" || partname=="kshort")mPart = mKaon0;
   else if(partname=="prt")mPart = mProton;
   else if(partname=="neu")mPart = mNeutron;
   else {
