@@ -6,3 +6,12 @@ cmake_install.cmake
 g4hp
 g4hpCint.cc
 *.pcm
+ana/*.o
+ana/*.so
+ana/PPFX
+ana/CreateYields
+ana/CreateMult
+ana/CreateInvXS
+ana/CreatePPFX.C
+ana/ExampleOfUsingFunctions
+ana/CreatePPFX
