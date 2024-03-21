@@ -26,18 +26,18 @@ PHYSICS      = "FTFP_BERT"
 
 def main():
   options = get_options()
-  
+
   cache_folder = CACHE_PNFS_AREA + str(random.randint(10000,99999)) + "/"
   os.makedirs(cache_folder)
-  
+
   os.makedirs(options.outdir)
 
   print("\nTarring up local area...")
   make_tarfile(TARFILE_NAME, ".")
 
-  shutil.move(TARFILE_NAME,    cache_folder) 
+  shutil.move(TARFILE_NAME,    cache_folder)
   shutil.copy("g4hp_job.sh", cache_folder)
-  
+
   print("\nTarball of local area:", cache_folder + TARFILE_NAME)
 
   logfile = options.outdir + "/g4hp_p{PARTICLE}_e{ENERGY}_t{TARGET}_e{NEVTS}_r{NUMRUN}_l{PHYSICS}_\$PROCESS.log".format(PARTICLE=options.particle,
@@ -52,30 +52,30 @@ def main():
                                                                                                          NEVTS=options.nevts,
                                                                                                          NUMRUN=options.numrun,
                                                                                                          PHYSICS=options.physics)
-  
+
   print("\nOutput logfile(s):",logfile)
 
   submit_command = ("jobsub_submit {GRID} {MEMORY} -N {NJOBS} -d G4HP {OUTDIR} "
-      "-G uboone --expected-lifetime=long "
-      "-e PHYSICS={PHYSICS} " 
-      "-e PARTICLE={PARTICLE} " 
-      "-e ENERGY={ENERGY} " 
-      "-e TARGET={TARGET} "  
-      "-e NEVTS={NEVTS} "  
+      "-G uboone --expected-lifetime=48h "
+      "-e PHYSICS={PHYSICS} "
+      "-e PARTICLE={PARTICLE} "
+      "-e ENERGY={ENERGY} "
+      "-e TARGET={TARGET} "
+      "-e NEVTS={NEVTS} "
       "-e NUMRUN={NUMRUN} "
       "-e TUPLEFILE={TUPLEFILE} "
       "-f {TARFILE} "
       "-L {LOGFILE} "
       "file://{CACHE}/g4hp_job.sh".format(
       GRID       = ("--OS=SL7 "
-                    "--resource-provides=usage_model=DEDICATED,OPPORTUNISTIC "
+                    "--resource-provides=usage_model=DEDICATED,OPPORTUNISTIC,ONSITE "
                     "--role=Analysis "),
       MEMORY     = "--memory 1200MB ",
       NJOBS      = options.njobs,
       OUTDIR     = options.outdir,
-      PARTICLE   = options.particle,    
-      ENERGY     = options.energy,    
-      PHYSICS    = options.physics,    
+      PARTICLE   = options.particle,
+      ENERGY     = options.energy,
+      PHYSICS    = options.physics,
       TARGET     = options.target,
       NEVTS      = options.nevts,
       NUMRUN     = options.numrun,
@@ -92,42 +92,42 @@ def main():
 def get_options():
   parser       = optparse.OptionParser(usage="usage: %prog [options]")
   grid_group   = optparse.OptionGroup(parser, "Grid Options")
-  
+
   grid_group.add_option("--outdir",
                         default = OUTDIR,
                         help    = "Output flux histograms location. Default = %default.")
-  
+
   grid_group.add_option("--njobs",
                         default = NJOBS,
                         help = "Number of g4hp jobs. Default = %default.")
 
   physics_group   = optparse.OptionGroup(parser, "Physics Options")
-  
-  physics_group.add_option('--physics', default = PHYSICS, 
+
+  physics_group.add_option('--physics', default = PHYSICS,
                         help="Select physics list.Default = %default.")
 
   beam_group   = optparse.OptionGroup(parser, "Beam Options")
-  
-  beam_group.add_option('--particle', default = PARTICLE, 
+
+  beam_group.add_option('--particle', default = PARTICLE,
                         help="Select incident particle.Default = %default.")
 
-  beam_group.add_option('--energy', default = ENERGY, 
+  beam_group.add_option('--energy', default = ENERGY,
                         help="Select incident energy.Default = %default.")
 
-  beam_group.add_option('--nevts', default = NEVTS, 
+  beam_group.add_option('--nevts', default = NEVTS,
                         help="Select number of events.Default = %default.")
 
   target_group   = optparse.OptionGroup(parser, "Target Options")
-  
-  target_group.add_option('--target', default = TARGET, 
+
+  target_group.add_option('--target', default = TARGET,
                         help="Select target type.Default = %default.")
-  
+
   run_group   = optparse.OptionGroup(parser, "Run Options")
-  
+
   run_group.add_option('--numrun', default = NUMRUN,
                          help="Run number numrun.Default = %default.")
 
-  
+
   parser.add_option_group(grid_group)
   parser.add_option_group(physics_group)
   parser.add_option_group(beam_group)
