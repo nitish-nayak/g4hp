@@ -32,6 +32,7 @@ void CreatePPFX(const char* invxsfile, const char* yieldfile, const char* physic
   TObjArray prtlist(0);
   TObjArray neulist(0);
   TObjArray yieldneulist(0);
+  TObjArray totprodlist(0);
   
   cout<<"Checking the invariant cross section files..."<<endl;
   //cout<<""<<endl;
@@ -144,6 +145,11 @@ void CreatePPFX(const char* invxsfile, const char* yieldfile, const char* physic
         // //cout<<newname_y<<endl;
         htemp_y->SetName(TString::Format("dndxf_%sGeV",incE));
         yieldneulist.Add(htemp_y);
+        
+        TH1D* htemp_z;
+        f->GetObject("inel_xs_tot", htemp_z);
+        htemp_z->SetName(TString::Format("tot_prod_xs_%sGeV", incE));
+        totprodlist.Add(htemp_z);
   // }
   //make new directory
   // mkdir("PPFX",0777);
@@ -167,6 +173,8 @@ void CreatePPFX(const char* invxsfile, const char* yieldfile, const char* physic
   neulist.Write();
   TFile* yield_neu = new TFile(Form("PPFX/yield_neu_%s.root",physicslist),"UPDATE");
   yieldneulist.Write();
+  TFile* tot_prod = new TFile(Form("PPFX/tot_prod_%s.root",physicslist),"UPDATE");
+  totprodlist.Write();
 
    invxs_pip->Close();
    invxs_pim->Close();
@@ -177,6 +185,7 @@ void CreatePPFX(const char* invxsfile, const char* yieldfile, const char* physic
    invxs_prt->Close();
    invxs_neu->Close();
    yield_neu->Close();
+   tot_prod->Close();
 
    std::cout<<"Just made a new PPFX directory. Check it out!"<<std::endl; 
 }
