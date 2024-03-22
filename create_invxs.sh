@@ -7,7 +7,9 @@ dirstr="/exp/uboone/data/users/bnayak/ppfx/flugg_studies/new_g4"
 ens=("158" "120" "110" "100" "90" "80" "70" "60" "50" "40" "31" "20" "12")
 for en in "${ens[@]}"; do
     box "Energy "$en
-    ./ana/CreateInvXS "$en" 20000000000 "$dirstr"/incp_"$en"/yields_"$en".root "$dirstr"/incp_"$en"/invxs_"$en".root
+    echo "Calculating Total Yields"
+    sed -n "/Nentries/ { n; p }" "$dirstr"/incp_"$en"/yields_qe_"$en".txt  | awk -F' ' '{ print $6 }' | paste -sd+ - | bc > "$dirstr"/incp_"$en"/tot_yields_"$en".txt
+    ./ana/CreateInvXS "$en" 20000000000 "$dirstr"/incp_"$en"/yields_"$en".root "$dirstr"/incp_"$en"/invxs_"$en".root "$dirstr"/incp_"$en"/tot_yields_"$en".txt
 done
 
 cd ana

@@ -127,9 +127,9 @@ void CreatePPFX(const char* invxsfile, const char* yieldfile, const char* physic
   // TChainElement *chEl_y=0;
   // while (( chEl_y=(TChainElement*)next_y() )) {
     // TFile* g = new TFile(chEl_y->GetTitle(),"UPDATE");
-  	TFile* g = new TFile(yieldfile,"READ");
+    // TFile* g = new TFile(yieldfile,"READ");
         TH1D* htemp_y;
-        g->GetObject("dndxf_neu",htemp_y);
+        f->GetObject("xs_dndxf_neu",htemp_y);
     	//find number in string title
         // string c_y = g->GetName();
         // //cout<<c_y<<endl;
