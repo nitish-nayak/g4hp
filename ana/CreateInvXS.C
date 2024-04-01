@@ -65,11 +65,12 @@ void CreateInvXS(Double_t mom, Double_t nincident, const char* infile, const cha
     if(!ifs.good()) continue;
     inel_xs = (double)std::atoi(line.c_str());
   }
-    std::cout << inel_xs << std::endl;
+  std::cout << inel_xs << std::endl;
   inel_xs *= (double)sigma_factor/nincident;
 
   TH2* yield_xFpT[Npart];
-  TH2* sigma_xFpT[Npart];
+  TH2* sigma_xFpT[Npart+2]; // for QE/fragmentation
+  TH2* yield_xFpT_tot[2]; // for QE/fragmentation
   TH1D* yield_dndxf_neu;
   TH1D* yield_dndxf_neu_cut;
   TH1D* yield_dndxf_neu_prod;
@@ -83,78 +84,86 @@ void CreateInvXS(Double_t mom, Double_t nincident, const char* infile, const cha
 
   for(Int_t ii=0;ii<Npart;ii++){
     yield_xFpT[ii] = (TH2*)finput->Get(Form("xFpT_%s",spart[ii].c_str()));
+    if(ii >= 6){
+      yield_xFpT_tot[ii-6] = (TH2*)finput->Get(Form("xFpT_tot_%s", spart[ii].c_str()));
+    }
   }
   yield_dndxf_neu = (TH1D*)finput->Get("dndxf_neu");
   yield_dndxf_neu_cut = (TH1D*)finput->Get("dndxf_neu_cut");
   yield_dndxf_neu_prod = (TH1D*)finput->Get("dndxf_neu_prod");
   yield_dndxf_neu_prod_cut = (TH1D*)finput->Get("dndxf_neu_prod_cut");
 
-   // copy the yields histogram into the cross-section histogram
-   // we convert to cross-section later
-   foutput->cd(0);
-   for(Int_t ii=0;ii<Npart;ii++){
-     sigma_xFpT[ii] = (TH2*) yield_xFpT[ii]->Clone(Form("sigma_xFpT_%s",spart[ii].c_str()));
-   }
-   // get 1D from saved 1D yield histograms directly
-   dndxf_neu = (TH1D*) yield_dndxf_neu->Clone("xs_dndxf_neu");
-   dndxf_neu_cut = (TH1D*) yield_dndxf_neu_cut->Clone("xs_dndxf_neu_cut");
-   dndxf_neu_prod = (TH1D*) yield_dndxf_neu_prod->Clone("xs_dndxf_neu_prod");
-   dndxf_neu_prod_cut = (TH1D*) yield_dndxf_neu_prod_cut->Clone("xs_dndxf_neu_prod_cut");
-   hinel_xs = new TH1D("inel_xs_tot", "", 1, 0, 1);
-   hinel_xs->SetBinContent(1, inel_xs);
-   // // integrate over 2D xsec to get 1D
-   // dndxf_neu_alt = (TH1D*) yield_dndxf_neu->Clone("xs_alt_dndxf_neu");
-   // for(int i = 1; i <= dndxf_neu_alt->GetNbinsX();i++)
-   //   dndxf_neu_alt->SetBinContent(i, 0.);
+  // copy the yields histogram into the cross-section histogram
+  // we convert to cross-section later
+  foutput->cd(0);
+  for(Int_t ii=0;ii<Npart;ii++){
+    sigma_xFpT[ii] = (TH2*) yield_xFpT[ii]->Clone(Form("sigma_xFpT_%s",spart[ii].c_str()));
+    if(ii >= 6){
+      sigma_xFpT[ii+2] = (TH2*)yield_xFpT_tot[ii-6]->Clone(Form("sigma_xFpT_tot_%s", spart[ii].c_str()));
+    }
+  }
+  // get 1D from saved 1D yield histograms directly
+  dndxf_neu = (TH1D*) yield_dndxf_neu->Clone("xs_dndxf_neu");
+  dndxf_neu_cut = (TH1D*) yield_dndxf_neu_cut->Clone("xs_dndxf_neu_cut");
+  dndxf_neu_prod = (TH1D*) yield_dndxf_neu_prod->Clone("xs_dndxf_neu_prod");
+  dndxf_neu_prod_cut = (TH1D*) yield_dndxf_neu_prod_cut->Clone("xs_dndxf_neu_prod_cut");
+  hinel_xs = new TH1D("inel_xs_tot", "", 1, 0, 1);
+  hinel_xs->SetBinContent(1, inel_xs);
+  // // integrate over 2D xsec to get 1D
+  // dndxf_neu_alt = (TH1D*) yield_dndxf_neu->Clone("xs_alt_dndxf_neu");
+  // for(int i = 1; i <= dndxf_neu_alt->GetNbinsX();i++)
+  //   dndxf_neu_alt->SetBinContent(i, 0.);
 
-   // convert the 2D yields histogram into a 2D cross-section histogram
-   for(Int_t ii=0;ii<Npart;ii++){
-     TH2* hxs=sigma_xFpT[ii];
-     hxs->Sumw2();
-     Double_t beamEcm = getEcm(mom);
-     if(ii == 7){
-        for(Int_t ix=1; ix <= dndxf_neu->GetNbinsX(); ix++){
-          // format for neutron histograms ppfx expects (fraction wrt total inelastic xsec)
-          dndxf_neu->SetBinContent(ix, (dndxf_neu->GetBinContent(ix)/nincident)*sigma_factor/(DxF_neu*inel_xs));
-          dndxf_neu_cut->SetBinContent(ix, (dndxf_neu_cut->GetBinContent(ix)/nincident)*sigma_factor/(DxF_neu*inel_xs));
-          dndxf_neu_prod->SetBinContent(ix, (dndxf_neu_prod->GetBinContent(ix)/nincident)*sigma_factor/(DxF_neu*inel_xs));
-          dndxf_neu_prod_cut->SetBinContent(ix, (dndxf_neu_prod_cut->GetBinContent(ix)/nincident)*sigma_factor/(DxF_neu*inel_xs));
-        }
-     }
-     for(Int_t ix=1; ix<=hxs->GetNbinsX(); ix++){
-       Double_t xfval = hxs->GetXaxis()->GetBinCenter(ix);
-       // Double_t DpzMid = getDPz(mom, xfval, 1.0, spart[ii]);
-       //
-       // Double_t alt_xs = 0.;
-       for(Int_t ipt=1; ipt<=hxs->GetNbinsY(); ipt++){
+  // convert the 2D yields histogram into a 2D cross-section histogram
+  for(Int_t ii=0;ii<Npart+2;ii++){
+    TH2* hxs=sigma_xFpT[ii];
+    hxs->Sumw2();
+    Double_t beamEcm = getEcm(mom);
 
-          Double_t ptval  = hxs->GetYaxis()->GetBinCenter(ipt);
-          Double_t DpT = hxs->GetYaxis()->GetBinWidth(ipt);
-          Double_t pTup   = ptval + DpT/2.0;
-          Double_t pTdown = ptval - DpT/2.0;
-          Double_t DpT2   = pow(pTup,2.)-pow(pTdown,2.);
+    std::string part_name = (ii > 7) ? spart[ii-2] : spart[ii];
+    if(ii == 7){
+      for(Int_t ix=1; ix <= dndxf_neu->GetNbinsX(); ix++){
+        // format for neutron histograms ppfx expects (fraction wrt total inelastic xsec)
+        dndxf_neu->SetBinContent(ix, (dndxf_neu->GetBinContent(ix)/nincident)*sigma_factor/(DxF_neu*inel_xs));
+        dndxf_neu_cut->SetBinContent(ix, (dndxf_neu_cut->GetBinContent(ix)/nincident)*sigma_factor/(DxF_neu*inel_xs));
+        dndxf_neu_prod->SetBinContent(ix, (dndxf_neu_prod->GetBinContent(ix)/nincident)*sigma_factor/(DxF_neu*inel_xs));
+        dndxf_neu_prod_cut->SetBinContent(ix, (dndxf_neu_prod_cut->GetBinContent(ix)/nincident)*sigma_factor/(DxF_neu*inel_xs));
+      }
+    }
+    for(Int_t ix=1; ix<=hxs->GetNbinsX(); ix++){
+      Double_t xfval = hxs->GetXaxis()->GetBinCenter(ix);
+      // Double_t DpzMid = getDPz(mom, xfval, 1.0, part_name);
+      //
+      // Double_t alt_xs = 0.;
+      for(Int_t ipt=1; ipt<=hxs->GetNbinsY(); ipt++){
 
-          Double_t Ener   = getEnergy(mom,xfval, ptval,spart[ii]);
-          Double_t yield  = hxs->GetBinContent(ix,ipt);
-          Double_t err_yield  = hxs->GetBinError(ix,ipt);
+        Double_t ptval  = hxs->GetYaxis()->GetBinCenter(ipt);
+        Double_t DpT = hxs->GetYaxis()->GetBinWidth(ipt);
+        Double_t pTup   = ptval + DpT/2.0;
+        Double_t pTdown = ptval - DpT/2.0;
+        Double_t DpT2   = pow(pTup,2.)-pow(pTdown,2.);
 
-          Double_t DPz    = getDPz(mom,xfval,ptval,spart[ii]);
-          Double_t DP3    = TMath::Pi()*DPz*DpT2;
-          Double_t invXS  = Ener/DP3 * (yield/nincident)*sigma_factor;
-          Double_t err_invXS = Ener/DP3 * (err_yield/nincident)*sigma_factor;
-          hxs->SetBinContent(ix,ipt,invXS);
-          hxs->SetBinError(ix,ipt,err_invXS);
-          // // for neutrons
-          // if(ii == 7){
-          //   alt_xs += beamEcm*(yield/nincident)*sigma_factor/(2.0*DPz);
-          // }
-       }
-       // if(ii == 7){
-       //   Int_t bin1d_xs = dndxf_neu_alt->FindBin(xfval);
-       //   dndxf_neu_alt->SetBinContent(bin1d_xs, alt_xs);
-       // }
-     }
-   }
+        Double_t Ener   = getEnergy(mom,xfval, ptval,part_name);
+        Double_t yield  = hxs->GetBinContent(ix,ipt);
+        Double_t err_yield  = hxs->GetBinError(ix,ipt);
+
+        Double_t DPz    = getDPz(mom,xfval,ptval,part_name);
+        Double_t DP3    = TMath::Pi()*DPz*DpT2;
+        Double_t invXS  = Ener/DP3 * (yield/nincident)*sigma_factor;
+        Double_t err_invXS = Ener/DP3 * (err_yield/nincident)*sigma_factor;
+        hxs->SetBinContent(ix,ipt,invXS);
+        hxs->SetBinError(ix,ipt,err_invXS);
+        // // for neutrons
+        // if(ii == 7){
+        //   alt_xs += beamEcm*(yield/nincident)*sigma_factor/(2.0*DPz);
+        // }
+      }
+      // if(ii == 7){
+      //   Int_t bin1d_xs = dndxf_neu_alt->FindBin(xfval);
+      //   dndxf_neu_alt->SetBinContent(bin1d_xs, alt_xs);
+      // }
+    }
+  }
 
 
   foutput->Write();
