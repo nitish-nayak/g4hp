@@ -33,12 +33,12 @@ echo "PROCESS=$PROCESS"
 
 dirOut="tmp_griddir${RANDOM}"
 
-#making the run number: 
+#making the run number:
 THISPROCESS=${PROCESS}
 run=$(( 1000000 * ${NUMRUN}  + THISPROCESS))
 
 echo "./g4hp -k ${dirOut} -t ${TARGET} -p ${PARTICLE} -n ${NEVTS} -f ${TUPLEFILE} -x ${run} -e ${ENERGY} -l ${PHYSICS} -y"
-./g4hp -k ${dirOut} -t ${TARGET} -p ${PARTICLE} -n ${NEVTS} -f ${TUPLEFILE} -x ${run} -e ${ENERGY} -l ${PHYSICS} -y
+time ./g4hp -k ${dirOut} -t ${TARGET} -p ${PARTICLE} -n ${NEVTS} -f ${TUPLEFILE} -x ${run} -e ${ENERGY} -l ${PHYSICS} -y
 
 echo "Current content of the outdir:"
 ls ${dirOut}/

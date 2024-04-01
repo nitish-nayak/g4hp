@@ -67,7 +67,7 @@ def main():
       "-f {TARFILE} "
       "-L {LOGFILE} "
       "file://{CACHE}/g4hp_job.sh".format(
-      GRID       = ("--OS=SL7 "
+      GRID       = ("--singularity-image=/cvmfs/singularity.opensciencegrid.org/fermilab/fnal-wn-sl7:latest "
                     "--resource-provides=usage_model=DEDICATED,OPPORTUNISTIC,ONSITE "
                     "--role=Analysis "),
       MEMORY     = "--memory 1200MB ",
