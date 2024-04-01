@@ -53,6 +53,7 @@ void HPAnalysis::book(const HPConfig &config)
   EvtTree = new TTree("hAinfoTree","g4hp info from h+A");
 
   EvtTree->Branch("hAinfo","HPTuple",&t_hptuple,32000,99);
+  EvtTree->Branch("inc_energy", &enerPrimGen); // MeV units
   HPSetup = config.createTree();
 
 }
