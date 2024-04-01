@@ -1,12 +1,19 @@
 #!/bin/bash
 
 en=$1
-jobdir="/pnfs/uboone/scratch/users/bnayak/ppfx_newg4/g4hp/incp_"$en
+jobdir=$2
+dirstr=$3
+# jobdir="/pnfs/uboone/scratch/users/bnayak/ppfx_newg4/g4hp/incp_"$en
 
 echo "Number of Output files : "
-fd -g "*.root" $jobdir | wc -l
+if command -v vd &> /dev/null; then
+    fd -g "*.root" $jobdir | wc -l
+else
+    find "$jobdir" -name "*.root" | wc -l
+fi
 
-cpdir="/exp/uboone/data/users/bnayak/ppfx/flugg_studies/new_g4_qe/incp_"$en
+# cpdir="/exp/uboone/data/users/bnayak/ppfx/flugg_studies/new_g4_qe/incp_"$en
+cpdir="$dirstr"/incp_"$en"
 
 if [ ! -d "$cpdir" ]; then
     mkdir -p "$cpdir"
@@ -15,7 +22,13 @@ fi
 
 # split jobs
 echo "Making filelists.."
-fd -g "*.root" $jobdir | split -l 100 -d
+if command -v vd &> /dev/null; then
+    fd -g "*.root" $jobdir | split -l 100 -d
+else
+    find "$jobdir" -name "*.root" | split -l 100 -d
+fi
+
+cd ..
 
 for i in {0..9}; do
     ./ana/CreateYields "$en" "x0"$i $cpdir"/parts/yields_part"$i".root" $cpdir"/parts/yields_qe_part"$i".txt" &
