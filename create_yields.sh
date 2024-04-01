@@ -6,7 +6,7 @@ jobdir="/pnfs/uboone/scratch/users/bnayak/ppfx_newg4/g4hp/incp_"$en
 echo "Number of Output files : "
 fd -g "*.root" $jobdir | wc -l
 
-cpdir="/exp/uboone/data/users/bnayak/ppfx/flugg_studies/new_g4/incp_"$en
+cpdir="/exp/uboone/data/users/bnayak/ppfx/flugg_studies/new_g4_qe/incp_"$en
 
 if [ ! -d "$cpdir" ]; then
     mkdir -p "$cpdir"
