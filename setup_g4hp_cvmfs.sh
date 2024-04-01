@@ -38,6 +38,7 @@ if [ -z "${G4LBNE_IS_SETUP}" ]; then
     setup geant4 v4_10_4_p02d -q e19:prof
     setup fftw v3_3_6_pl2 -q prof
     setup python v2_7_14
+    setup gdb v12_1
     # setup dk2nu v01_05_01b -q e15:prof
     setup dk2nudata v01_08_00g -q e19:prof
     unset G4BIN

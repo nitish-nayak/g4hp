@@ -13,7 +13,7 @@ HPTrackingAction::~HPTrackingAction() {}
 
 void HPTrackingAction::PostUserTrackingAction(const G4Track* aTrack){
 
-  
+
 
 G4TrackVector* secondaries = fpTrackingManager->GimmeSecondaries();
   if(secondaries)
@@ -25,10 +25,10 @@ G4TrackVector* secondaries = fpTrackingManager->GimmeSecondaries();
       incoming_primary=true;
 #ifdef DEBUG
       std::cout<<aTrack->GetDefinition()->GetParticleName()<<" detected as primary"<<std::endl;
-#endif      
+#endif
     }
     else info = dynamic_cast<HPTrackInfo*>(aTrack->GetUserInformation());
-   
+
     size_t nSeco = secondaries->size();
     if(nSeco>0)
     {
@@ -49,16 +49,16 @@ G4TrackVector* secondaries = fpTrackingManager->GimmeSecondaries();
 	// but no hadron production experiment explicitly measures
 	bool quick=false;
 	const G4double quick_lifetime=1e-16*CLHEP::second;
-	const G4ParticleDefinition* pd = secondary->GetDefinition();	
+	const G4ParticleDefinition* pd = secondary->GetDefinition();
 	G4double lifetime=pd->GetPDGLifeTime();
 	if(!pd->GetPDGStable() &&  lifetime<quick_lifetime) {
 	  quick=true;
 	  // add user info recording this as a quickly decaying particle
-	  infoNew->fast_decay=true;	  
+	  infoNew->fast_decay=true;
 #ifdef DEBUG
 	  std::cout<<" quick ("<<lifetime<<")";
 #endif
-	}  
+	}
 #ifdef DEBUG
 	else {
 	  std::cout<<" slow ";
@@ -77,15 +77,18 @@ G4TrackVector* secondaries = fpTrackingManager->GimmeSecondaries();
 	else std::cout<<"| slow progeny";
 #endif
 	///////// primary or in primary fast decay chain /////////
-	// now record if the parent was the primary and this 
+	// now record if the parent was the primary and this
 	// secondary was created in a proton inelastic interaction
-	// OR if the parent was a quickly decaying particle in the 
+	// OR if the parent was a quickly decaying particle in the
 	// primary chain
 	bool inel = (secondary->GetCreatorProcess()->GetProcessName()=="protonInelastic") ||
-	  (secondary->GetCreatorProcess()->GetProcessName()=="pi+Inelastic") || 
-	  (secondary->GetCreatorProcess()->GetProcessName()=="pi-Inelastic");
-	
-	if( (incoming_primary && inel)  
+	  (secondary->GetCreatorProcess()->GetProcessName()=="pi+Inelastic") ||
+	  (secondary->GetCreatorProcess()->GetProcessName()=="pi-Inelastic") ||
+	  (secondary->GetCreatorProcess()->GetProcessName()=="kaon+Inelastic") ||
+	  (secondary->GetCreatorProcess()->GetProcessName()=="kaon-Inelastic");
+
+
+	if( (incoming_primary && inel)
 	    || ( info->primary_chain && info->fast_decay)){
 	  infoNew->primary_chain=true;
 #ifdef DEBUG
@@ -98,7 +101,7 @@ G4TrackVector* secondaries = fpTrackingManager->GimmeSecondaries();
 	  std::cout<<" | not primary_chain";
 	}
 	std::cout<<std::endl;
-#endif 
+#endif
       }
     }
   }
