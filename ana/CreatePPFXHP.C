@@ -14,7 +14,7 @@ const Int_t Npart = 8; //4; //8; //6
 const char* part[Npart]  = {"pip","pim","kap","kam","klong","kshort","prt","neu"};
 TH2D* getvhist(TFile* fIn, int ipart);
 TH2D* getvtothist(TFile* fIn, int ipart);
-void CreatePPFX(const char* invxsfile, const char* yieldfile, const char* physicslist, const char* incE){
+void CreatePPFXHP(const char* invxsfile, const char* yieldfile, const char* physicslist, const char* incE){
   //take a text file with the paths of all the G4HP simulations and convert them into
   //QGSP ntuples for PPFX
 
@@ -226,7 +226,7 @@ TH2D* getvtothist(TFile* fIn, int ipart){
 }
 
 int main(int argc, const char* argv[]){
-  CreatePPFX(argv[1],argv[2],argv[3],argv[4]);
+  CreatePPFXHP(argv[1],argv[2],argv[3],argv[4]);
   return 0;
 }
 

@@ -14,4 +14,5 @@ ana/CreateMult
 ana/CreateInvXS
 ana/CreateInelXS
 ana/ExampleOfUsingFunctions
-ana/CreatePPFX
+ana/CreatePPFXHP
+ana/CreatePPFXInel
