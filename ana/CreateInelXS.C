@@ -73,7 +73,10 @@ void CreateInelXS(const char* infiles, const char* out_histfile, const char* out
 
   TH1D* hnorm = new TH1D("xs_norm", ";Kinematic Energy (GeV); Normalization", KE_bins, low_KE, high_KE);
   std::cout << "Looping over setup tree first.." << std::endl;
-  for(long int jentry=0; jentry<(int)setup->GetEntries(); jentry++) {
+  int setup_nentries = (int)setup->GetEntries();
+  std::cout << "Setup entries : " << setup_nentries << std::endl;
+
+  for(long int jentry=0; jentry<(int)setup_nentries; jentry++) {
     int nb = setup->GetEntry(jentry);
     double sigma_factor=1.0/(density/tgt_A * NA * dx * cm2_per_mb); // mb
     hnorm->Fill(energy, (double)nincident/sigma_factor);
