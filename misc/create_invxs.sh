@@ -23,5 +23,5 @@ done
 
 for en in "${ens[@]}"; do
     box "Energy "$en
-    ./CreatePPFX "$dirstr"/incp_"$en"/invxs_"$en".root "$dirstr"/incp_"$en"/yields_"$en".root "FTFP_BERT" "$en"
+    ./CreatePPFXHP "$dirstr"/incp_"$en"/invxs_"$en".root "$dirstr"/incp_"$en"/yields_"$en".root "FTFP_BERT" "$en"
 done
