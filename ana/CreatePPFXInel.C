@@ -54,6 +54,7 @@ void CreatePPFXInel(const char* xsfiles, const char* target){
 
     if(!htemp) continue;
     htemp->SetName(TString::Format("h%s_%s",part[jj], target));
+    htemp->GetYaxis()->SetTitle("Absorption Cross-Section (mb)");
 
     if(jj==0)piplist.Add(htemp);
     if(jj==1)pimlist.Add(htemp);
