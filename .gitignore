@@ -12,6 +12,6 @@ ana/PPFX
 ana/CreateYields
 ana/CreateMult
 ana/CreateInvXS
-ana/CreatePPFX.C
+ana/CreateInelXS
 ana/ExampleOfUsingFunctions
 ana/CreatePPFX

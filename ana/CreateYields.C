@@ -19,7 +19,7 @@
 using namespace std;
 
 //constants:
-const Int_t    Nhistos = 201; 
+const Int_t    Nhistos = 201;
 const Int_t    pT_bins = 80;
 const Double_t fpT     = 0.0125;
 const Double_t lpT     = 2.0125;
@@ -47,7 +47,7 @@ void CreateYields(Int_t Mom, const char* infiles, const char* out_histfile, cons
 
   TChain* evts = new TChain("hAinfoTree");
   HPTuple*  hAinfo  = new HPTuple;
-  std::ifstream ifs;	
+  std::ifstream ifs;
   ifs.open(infiles);
   std::string line;
   while (ifs.good()) {
@@ -55,14 +55,14 @@ void CreateYields(Int_t Mom, const char* infiles, const char* out_histfile, cons
     if(line.find(".root")>10000)continue;
     evts->Add(line.c_str());
     std::cout<<"Adding ntuple at : "<<line<<std::endl;
-  }	
-  ifs.close();  
+  }
+  ifs.close();
   evts->SetBranchAddress("hAinfo",&hAinfo);
 
   std::cout<< (evts->GetNtrees()) <<" files were added to the chain"<<std::endl;
 
-  qeinfo<<"Processing "<< (evts->GetNtrees()) <<" trees in the chain"<<std::endl;;
-  qeinfo<<"#Nentries Entries el_like qe_like frag_like prod_entries"<<std::endl;;  
+  qeinfo<<"Processing "<< (evts->GetNtrees()) <<" trees in the chain"<<std::endl;
+  qeinfo<<"#Nentries Entries el_like qe_like frag_like prod_entries"<<std::endl;
   //Counting quasielastics:
   Int_t  Nqe_pp        = 0;
   Int_t  Nqe_tot       = 0;
@@ -74,14 +74,14 @@ void CreateYields(Int_t Mom, const char* infiles, const char* out_histfile, cons
 
   foutput->cd(0);
   for(Int_t ii=0;ii<6;ii++){
-    hxFpT[ii] = new TH2D(Form("xFpT_%s",spart[ii].c_str()),";x_{F}; p_{T} (GeV/c)", 
+    hxFpT[ii] = new TH2D(Form("xFpT_%s",spart[ii].c_str()),";x_{F}; p_{T} (GeV/c)",
                          201,-0.1025,0.9025,80,0.0125,2.0125);
   }
   // protons and neutrons need a different binning in xF
   for(Int_t ii=6;ii<=7;ii++){
-    hxFpT[ii] = new TH2D(Form("xFpT_%s",spart[ii].c_str()),";x_{F}; p_{T} (GeV/c)", 
+    hxFpT[ii] = new TH2D(Form("xFpT_%s",spart[ii].c_str()),";x_{F}; p_{T} (GeV/c)",
                          351,-0.8025,0.9525,80,0.0125,2.0125);
-    hxFpT_tot[ii-6] = new TH2D(Form("xFpT_tot_%s",spart[ii].c_str()),";x_{F}; p_{T} (GeV/c)", 
+    hxFpT_tot[ii-6] = new TH2D(Form("xFpT_tot_%s",spart[ii].c_str()),";x_{F}; p_{T} (GeV/c)",
                                351,-0.8025,0.9525,80,0.0125,2.0125);
   }
   // special histogram for neutron yields
@@ -94,7 +94,7 @@ void CreateYields(Int_t Mom, const char* infiles, const char* out_histfile, cons
   int TEntries = 0;
   int nentries  = (int)evts->GetEntries();
 
-  std::cout<<"Entries "<<nentries<<std::endl;;
+  std::cout<<"Entries "<<nentries<<std::endl;
 
   Long64_t pip_yield=0;
   Long64_t pim_yield=0;
@@ -105,8 +105,8 @@ void CreateYields(Int_t Mom, const char* infiles, const char* out_histfile, cons
     Int_t countNucleons = 0;
     Int_t countFragments= 0;
 
-    if(jentry%100000==0)std::cout<<"Entry "<<jentry/1000<<" k"<<std::endl;;
-    int nb = evts->GetEntry(jentry);  
+    if(jentry%100000==0)std::cout<<"Entry "<<jentry/1000<<" k"<<std::endl;
+    int nb = evts->GetEntry(jentry);
 
     int npart = int(hAinfo->prodpart.size());
 
@@ -114,7 +114,7 @@ void CreateYields(Int_t Mom, const char* infiles, const char* out_histfile, cons
     for(int ipart=0;ipart<npart;ipart++){
       int pdg = hAinfo->prodpart[ipart].pdg;
       if(abs(pdg)==211 || abs(pdg)==321)countpiK++;
-      if(pdg==111)countpiK++;    
+      if(pdg==111)countpiK++;
       if(pdg==130 || pdg==310 )countpiK++;
       if(pdg==2212||pdg==2112)countNucleons++;
       if(pdg>1000000000) countFragments++;
@@ -131,7 +131,7 @@ void CreateYields(Int_t Mom, const char* infiles, const char* out_histfile, cons
     // or events with more than 2 nucleons and one or more fragments
     if((countpiK ==0 && countFragments>1 && countNucleons>0)
       || (countpiK ==0 && countFragments>0 && countNucleons>2)){
-      frag_tot++; 
+      frag_tot++;
       frag_event=true;
     }
 
@@ -140,7 +140,7 @@ void CreateYields(Int_t Mom, const char* infiles, const char* out_histfile, cons
 
     //production count:
     bool prod_event=false;
-    if(countpiK>0){ prod_tot++; prod_event=true;}  
+    if(countpiK>0){ prod_tot++; prod_event=true;}
 
     //if(!prod_event && !qe_event && !frag_event && !el_event) evts->Show(jentry);
 
@@ -184,14 +184,14 @@ void CreateYields(Int_t Mom, const char* infiles, const char* out_histfile, cons
     }
   }
 
-  qeinfo<<nentries<<"    "<<TEntries<<"    "<<el_tot<<"     "<<qe_tot<<"    "<<frag_tot<<"     "<<prod_tot<<std::endl;;
-  qeinfo<<"average pi+ multiplicity per production event: "<<double(pip_yield)/double(prod_tot)<<std::endl;;
-  qeinfo<<"average pi- multiplicity per production event: "<<double(pim_yield)/double(prod_tot)<<std::endl;;
+  qeinfo<<nentries<<"    "<<TEntries<<"    "<<el_tot<<"     "<<qe_tot<<"    "<<frag_tot<<"     "<<prod_tot<<std::endl;
+  qeinfo<<"average pi+ multiplicity per production event: "<<double(pip_yield)/double(prod_tot)<<std::endl;
+  qeinfo<<"average pi- multiplicity per production event: "<<double(pim_yield)/double(prod_tot)<<std::endl;
 
   qeinfo.close();
   foutput->Write();
   foutput->Close();
-  std::cout<<"===>>>Running end"<<std::endl;;
+  std::cout<<"===>>>Running end"<<std::endl;
 }
 
 //Get Histo ID:
@@ -205,12 +205,12 @@ Int_t getHistoID(Double_t xFval){
 
 //Get xF value from xF histo number:
 Double_t getxF(Int_t id){
-  return fxF + (Double_t(id)+0.5)*DxF; 
+  return fxF + (Double_t(id)+0.5)*DxF;
 }
 
 # ifndef __CINT__
 int main(int argc, const char* argv[]){
-  int tmom = atoi(argv[1]); 
+  int tmom = atoi(argv[1]);
   bool doff = true;
   if(argc==5)CreateYields(tmom,argv[2],argv[3],argv[4],doff);
   if(argc==6){
