@@ -66,27 +66,39 @@ void CreatePPFXInel(const char* xsfiles, const char* target){
   }
 
   TFile* inel_xs = new TFile("PPFX/InelXS_geant4.root", "UPDATE");
-  inel_xs->mkdir("pip"); inel_xs->cd("pip");
+  if(!inel_xs->GetDirectory("pip"))
+    inel_xs->mkdir("pip");
+  inel_xs->cd("pip");
   if(piplist.GetEntries()) piplist.Write();
   inel_xs->cd();
 
-  inel_xs->mkdir("pim"); inel_xs->cd("pim");
+  if(!inel_xs->GetDirectory("pim"))
+    inel_xs->mkdir("pim");
+  inel_xs->cd("pim");
   if(pimlist.GetEntries()) pimlist.Write();
   inel_xs->cd();
 
-  inel_xs->mkdir("kap"); inel_xs->cd("kap");
+  if(!inel_xs->GetDirectory("kap"))
+    inel_xs->mkdir("kap");
+  inel_xs->cd("kap");
   if(kaplist.GetEntries()) kaplist.Write();
   inel_xs->cd();
 
-  inel_xs->mkdir("kam"); inel_xs->cd("kam");
+  if(!inel_xs->GetDirectory("kam"))
+    inel_xs->mkdir("kam");
+  inel_xs->cd("kam");
   if(kamlist.GetEntries()) kamlist.Write();
   inel_xs->cd();
 
-  inel_xs->mkdir("prt"); inel_xs->cd("prt");
+  if(!inel_xs->GetDirectory("prt"))
+    inel_xs->mkdir("prt");
+  inel_xs->cd("prt");
   if(prtlist.GetEntries()) prtlist.Write();
   inel_xs->cd();
 
-  inel_xs->mkdir("neu"); inel_xs->cd("neu");
+  if(!inel_xs->GetDirectory("neu"))
+    inel_xs->mkdir("neu");
+  inel_xs->cd("neu");
   if(neulist.GetEntries()) neulist.Write();
   inel_xs->cd();
 
