@@ -3,7 +3,7 @@
 jobdir=$1
 dirstr=$2
 
-if command -v vd &> /dev/null; then
+if command -v fd &> /dev/null; then
     ntot=`fd -g "*.root" $jobdir | wc -l`
 else
     ntot=`find "$jobdir" -name "*.root" | wc -l`
@@ -21,7 +21,7 @@ cd ..
 
 # split jobs
 echo "Making filelists.."
-if command -v vd &> /dev/null; then
+if command -v fd &> /dev/null; then
     fd -g "*.root" $jobdir | split -l 160 -d
 else
     find "$jobdir" -name "*.root" | split -l 160 -d

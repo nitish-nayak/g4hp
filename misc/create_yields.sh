@@ -6,7 +6,7 @@ dirstr=$3
 # jobdir="/pnfs/uboone/scratch/users/bnayak/ppfx_newg4/g4hp/incp_"$en
 
 echo "Number of Output files : "
-if command -v vd &> /dev/null; then
+if command -v fd &> /dev/null; then
     fd -g "*.root" $jobdir | wc -l
 else
     find "$jobdir" -name "*.root" | wc -l
@@ -24,7 +24,7 @@ cd ..
 
 # split jobs
 echo "Making filelists.."
-if command -v vd &> /dev/null; then
+if command -v fd &> /dev/null; then
     fd -g "*.root" $jobdir | split -l 100 -d
 else
     find "$jobdir" -name "*.root" | split -l 100 -d
