@@ -162,8 +162,8 @@ void CreatePPFXHP(const char* invxsfile, const char* yieldfile, const char* phys
   yieldneulist.Add(htemp_y);
 
   TH1D* htemp_z;
-  f->GetObject("inel_xs_tot", htemp_z);
-  htemp_z->SetName(TString::Format("tot_prod_xs_%sGeV", incE));
+  f->GetObject("inel_frac", htemp_z);
+  htemp_z->SetName(TString::Format("frac_prod_xs_%sGeV", incE));
   totprodlist.Add(htemp_z);
   // }
   //make new directory
@@ -188,7 +188,7 @@ void CreatePPFXHP(const char* invxsfile, const char* yieldfile, const char* phys
   neulist.Write();
   TFile* yield_neu = new TFile(Form("PPFX/yield_neu_%s.root",physicslist),"UPDATE");
   yieldneulist.Write();
-  TFile* tot_prod = new TFile(Form("PPFX/tot_prod_%s.root",physicslist),"UPDATE");
+  TFile* frac_prod = new TFile(Form("PPFX/frac_prod_%s.root",physicslist),"UPDATE");
   totprodlist.Write();
   TFile* qe_prt_f = new TFile("PPFX/invxs_qe_corr_prt.root", "UPDATE");
   qe_prtlist.Write();
@@ -204,7 +204,7 @@ void CreatePPFXHP(const char* invxsfile, const char* yieldfile, const char* phys
   invxs_prt->Close();
   invxs_neu->Close();
   yield_neu->Close();
-  tot_prod->Close();
+  frac_prod->Close();
   qe_prt_f->Close();
   qe_neu_f->Close();
 

@@ -42,29 +42,30 @@ const std::string spart[Npart] = {"pip","pim","kap","kam","klong","kshort","prt"
 using std::cout;
 using std::endl;
 
-void CreateInvXS(Double_t mom, Int_t nincident, const char* infile, const char* outfile, const char* inel_yieldfile);
+void CreateInvXS(Double_t mom, Int_t nincident, const char* infile, const char* outfile, double yield_tot, double frac_prod);
 Double_t getxF(Int_t id);
 Double_t getEcm(Double_t beam_mom);
 Double_t getEnergy(Double_t beam_mom,Double_t xfey,Double_t ptrans,std::string partname);
 Double_t getPz(Double_t beam_mom,Double_t xfey,Double_t ptrans,std::string partname);
 Double_t getDPz(Double_t beam_mom,Double_t xfey,Double_t ptrans,std::string partname);
 
-void CreateInvXS(Double_t mom, Double_t nincident, const char* infile, const char* outfile, const char* inel_yieldfile){
+void CreateInvXS(Double_t mom, Double_t nincident, const char* infile, const char* outfile, double yield_tot, double frac_prod){
   cout<<"===>>>Running begin"<<endl;
 
   TFile* finput  = new TFile(infile,"READ");
   TFile* foutput = new TFile(outfile,"RECREATE");
 
-  std::ifstream ifs;
-  ifs.open(inel_yieldfile);
-  std::string line;
-  Double_t inel_xs = 0.;
-  while (ifs.good()){
-    std::getline(ifs, line);
-    if(line.find("#") == 0) continue;
-    if(!ifs.good()) continue;
-    inel_xs = (double)std::atoi(line.c_str());
-  }
+  Double_t inel_xs = yield_tot*frac_prod;
+  // std::ifstream ifs;
+  // // expects fraction of prod / total yields
+  // ifs.open(inel_yieldfile);
+  // std::string line;
+  // while (ifs.good()){
+  //   std::getline(ifs, line);
+  //   if(line.find("#") == 0) continue;
+  //   if(!ifs.good()) continue;
+  //   inel_xs = (double)std::atoi(line.c_str());
+  // }
   std::cout << inel_xs << std::endl;
   inel_xs *= (double)sigma_factor/nincident;
 
@@ -80,7 +81,7 @@ void CreateInvXS(Double_t mom, Double_t nincident, const char* infile, const cha
   TH1D* dndxf_neu_prod;
   TH1D* dndxf_neu_prod_cut;
   TH1D* dndxf_neu_alt;
-  TH1D* hinel_xs;
+  TH1D* hinel_frac;
 
   for(Int_t ii=0;ii<Npart;ii++){
     yield_xFpT[ii] = (TH2*)finput->Get(Form("xFpT_%s",spart[ii].c_str()));
@@ -107,8 +108,8 @@ void CreateInvXS(Double_t mom, Double_t nincident, const char* infile, const cha
   dndxf_neu_cut = (TH1D*) yield_dndxf_neu_cut->Clone("xs_dndxf_neu_cut");
   dndxf_neu_prod = (TH1D*) yield_dndxf_neu_prod->Clone("xs_dndxf_neu_prod");
   dndxf_neu_prod_cut = (TH1D*) yield_dndxf_neu_prod_cut->Clone("xs_dndxf_neu_prod_cut");
-  hinel_xs = new TH1D("inel_xs_tot", "", 1, 0, 1);
-  hinel_xs->SetBinContent(1, inel_xs);
+  hinel_frac = new TH1D("inel_frac", "", 1, 0, 1);
+  hinel_frac->SetBinContent(1, frac_prod);
   // // integrate over 2D xsec to get 1D
   // dndxf_neu_alt = (TH1D*) yield_dndxf_neu->Clone("xs_alt_dndxf_neu");
   // for(int i = 1; i <= dndxf_neu_alt->GetNbinsX();i++)
@@ -242,8 +243,10 @@ Double_t getDPz(Double_t beam_mom,Double_t xfey,Double_t ptrans,std::string part
 int main(int argc, const char* argv[]){
   double tmom = atof(argv[1]);
   double ninc = atof(argv[2]);
+  double yield_tot = atof(argv[5]);
+  double frac_prod = atof(argv[6]);
   bool doff = true;
-  CreateInvXS(tmom,ninc,argv[3],argv[4],argv[5]);
+  CreateInvXS(tmom,ninc,argv[3],argv[4],yield_tot,frac_prod);
   return 0;
 }
 # endif
