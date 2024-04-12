@@ -15,9 +15,9 @@ for en in "${ens[@]}"; do
     yield_prod=`sed -n "/Nentries/ { n; p }" "$dirstr"/incp_"$en"/yields_qe_"$en".txt  | awk -F' ' '{ print $6 }' | paste -sd+ - | bc`
     yield_tot=`sed -n "/Nentries/ { n; p }" "$dirstr"/incp_"$en"/yields_qe_"$en".txt  | awk -F' ' '{ print $2 }' | paste -sd+ - | bc`
     frac_prod=`echo "scale=10 ; $yield_prod / $yield_tot" | bc`
-    echo $frac_prod > "$dirstr"/incp_"$en"/tot_prod_yields_"$en".txt
-    echo $yield_prod >> "$dirstr"/incp_"$en"/tot_prod_yields_"$en".txt
-    ./ana/CreateInvXS "$en" 20000000000 "$dirstr"/incp_"$en"/yields_"$en".root "$dirstr"/incp_"$en"/invxs_"$en".root "$yield_prod" "$frac_prod"
+    echo $frac_prod" # fraction of prod yields" > "$dirstr"/incp_"$en"/tot_prod_yields_"$en".txt
+    echo $yield_tot" # total yields" >> "$dirstr"/incp_"$en"/tot_prod_yields_"$en".txt
+    ./ana/CreateInvXS "$en" 20000000000 "$dirstr"/incp_"$en"/yields_"$en".root "$dirstr"/incp_"$en"/invxs_"$en".root "$yield_tot" "$frac_prod"
 done
 
 cd ana

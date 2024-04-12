@@ -162,9 +162,13 @@ void CreatePPFXHP(const char* invxsfile, const char* yieldfile, const char* phys
   yieldneulist.Add(htemp_y);
 
   TH1D* htemp_z;
+  TH1D* htemp_tot_xs;
   f->GetObject("inel_frac", htemp_z);
+  f->GetObject("tot_xs", htemp_tot_xs);
   htemp_z->SetName(TString::Format("frac_prod_xs_%sGeV", incE));
+  htemp_tot_xs->SetName(TString::Format("tot_xs_%sGeV", incE));
   totprodlist.Add(htemp_z);
+  totprodlist.Add(htemp_tot_xs);
   // }
   //make new directory
   // mkdir("PPFX",0777);

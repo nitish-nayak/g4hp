@@ -66,8 +66,8 @@ void CreateInvXS(Double_t mom, Double_t nincident, const char* infile, const cha
   //   if(!ifs.good()) continue;
   //   inel_xs = (double)std::atoi(line.c_str());
   // }
-  std::cout << inel_xs << std::endl;
   inel_xs *= (double)sigma_factor/nincident;
+  std::cout << inel_xs << std::endl;
 
   TH2* yield_xFpT[Npart];
   TH2* sigma_xFpT[Npart+2]; // for QE/fragmentation
@@ -82,6 +82,7 @@ void CreateInvXS(Double_t mom, Double_t nincident, const char* infile, const cha
   TH1D* dndxf_neu_prod_cut;
   TH1D* dndxf_neu_alt;
   TH1D* hinel_frac;
+  TH1D* htot_xs;
 
   for(Int_t ii=0;ii<Npart;ii++){
     yield_xFpT[ii] = (TH2*)finput->Get(Form("xFpT_%s",spart[ii].c_str()));
@@ -110,6 +111,8 @@ void CreateInvXS(Double_t mom, Double_t nincident, const char* infile, const cha
   dndxf_neu_prod_cut = (TH1D*) yield_dndxf_neu_prod_cut->Clone("xs_dndxf_neu_prod_cut");
   hinel_frac = new TH1D("inel_frac", "", 1, 0, 1);
   hinel_frac->SetBinContent(1, frac_prod);
+  htot_xs = new TH1D("tot_xs", "", 1, 0, 1);
+  htot_xs->SetBinContent(1, inel_xs/frac_prod);
   // // integrate over 2D xsec to get 1D
   // dndxf_neu_alt = (TH1D*) yield_dndxf_neu->Clone("xs_alt_dndxf_neu");
   // for(int i = 1; i <= dndxf_neu_alt->GetNbinsX();i++)
