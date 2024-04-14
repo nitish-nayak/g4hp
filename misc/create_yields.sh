@@ -1,9 +1,9 @@
 #!/bin/bash
 
 en=$1
-jobdir=$2
-dirstr=$3
-# jobdir="/pnfs/uboone/scratch/users/bnayak/ppfx_newg4/g4hp/incp_"$en
+# jobdir=$2
+# dirstr=$3
+jobdir="/pnfs/uboone/scratch/users/bnayak/ppfx_newg4/g4hp/incp_"$en
 
 echo "Number of Output files : "
 if command -v fd &> /dev/null; then
@@ -12,8 +12,8 @@ else
     find "$jobdir" -name "*.root" | wc -l
 fi
 
-# cpdir="/exp/uboone/data/users/bnayak/ppfx/flugg_studies/new_g4_qe/incp_"$en
-cpdir="$dirstr"/incp_"$en"
+cpdir="/exp/uboone/data/users/bnayak/ppfx/flugg_studies/new_g4_bugfix/incp_"$en
+# cpdir="$dirstr"/incp_"$en"
 
 if [ ! -d "$cpdir" ]; then
     mkdir -p "$cpdir"

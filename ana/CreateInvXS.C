@@ -113,16 +113,15 @@ void CreateInvXS(Double_t mom, Double_t nincident, const char* infile, const cha
   hinel_frac->SetBinContent(1, frac_prod);
   htot_xs = new TH1D("tot_xs", "", 1, 0, 1);
   htot_xs->SetBinContent(1, inel_xs/frac_prod);
-  // // integrate over 2D xsec to get 1D
-  // dndxf_neu_alt = (TH1D*) yield_dndxf_neu->Clone("xs_alt_dndxf_neu");
-  // for(int i = 1; i <= dndxf_neu_alt->GetNbinsX();i++)
-  //   dndxf_neu_alt->SetBinContent(i, 0.);
+  // integrate over 2D xsec to get 1D
+  dndxf_neu_alt = (TH1D*) yield_dndxf_neu->Clone("xs_alt_dndxf_neu");
+  for(int i = 1; i <= dndxf_neu_alt->GetNbinsX();i++)
+    dndxf_neu_alt->SetBinContent(i, 0.);
 
   // convert the 2D yields histogram into a 2D cross-section histogram
   for(Int_t ii=0;ii<Npart+2;ii++){
     TH2* hxs=sigma_xFpT[ii];
     hxs->Sumw2();
-    Double_t beamEcm = getEcm(mom);
 
     std::string part_name = (ii > 7) ? spart[ii-2] : spart[ii];
     if(ii == 7){
@@ -136,9 +135,9 @@ void CreateInvXS(Double_t mom, Double_t nincident, const char* infile, const cha
     }
     for(Int_t ix=1; ix<=hxs->GetNbinsX(); ix++){
       Double_t xfval = hxs->GetXaxis()->GetBinCenter(ix);
-      // Double_t DpzMid = getDPz(mom, xfval, 1.0, part_name);
+      Double_t DPzMid = getDPz(mom, xfval, 1.0, part_name);
       //
-      // Double_t alt_xs = 0.;
+      Double_t dndxf_neu_prod_bin = 0.;
       for(Int_t ipt=1; ipt<=hxs->GetNbinsY(); ipt++){
 
         Double_t ptval  = hxs->GetYaxis()->GetBinCenter(ipt);
@@ -157,15 +156,18 @@ void CreateInvXS(Double_t mom, Double_t nincident, const char* infile, const cha
         Double_t err_invXS = Ener/DP3 * (err_yield/nincident)*sigma_factor;
         hxs->SetBinContent(ix,ipt,invXS);
         hxs->SetBinError(ix,ipt,err_invXS);
-        // // for neutrons
-        // if(ii == 7){
-        //   alt_xs += beamEcm*(yield/nincident)*sigma_factor/(2.0*DPz);
-        // }
+
+        Double_t beamEcm = getEcm(mom);
+        // for neutrons
+        if(ii == 7){
+          // dndxf_neu_prod_bin += 0.5*beamEcm*(yield/nincident)*sigma_factor;
+          dndxf_neu_prod_bin += (yield/nincident)*sigma_factor;
+        }
       }
-      // if(ii == 7){
-      //   Int_t bin1d_xs = dndxf_neu_alt->FindBin(xfval);
-      //   dndxf_neu_alt->SetBinContent(bin1d_xs, alt_xs);
-      // }
+      if(ii == 7){
+        Int_t bin1d_xs = dndxf_neu_alt->FindBin(xfval);
+        dndxf_neu_alt->Fill(xfval, dndxf_neu_prod_bin/(inel_xs*DxF_neu));
+      }
     }
   }
 

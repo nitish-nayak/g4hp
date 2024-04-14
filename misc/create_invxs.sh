@@ -3,7 +3,7 @@
 # Make box around text @climagic
 function box() { t="$1xxxx";c=${2:-=}; echo ${t//?/$c}; echo "$c $1 $c"; echo ${t//?/$c}; }
 
-dirstr="/exp/uboone/data/users/bnayak/ppfx/flugg_studies/new_g4_qe"
+dirstr="/exp/uboone/data/users/bnayak/ppfx/flugg_studies/new_g4_bugfix"
 # dirstr=$1
 
 cd ..

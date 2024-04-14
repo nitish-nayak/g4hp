@@ -175,7 +175,7 @@ void CreateYields(Int_t Mom, const char* infiles, const char* out_histfile, cons
         dndxf_neu->Fill(xF);
         if(prod_event) 	dndxf_neu_prod->Fill(xF);
         double A=0.398; double B=4.315; // pt< A+B*xF for NA49 neutron acceptance
-        if(pT/1000.0<A+B*xF){
+        if(pT< (A+B*xF)){
           dndxf_neu_cut->Fill(xF);
           if(prod_event) 	dndxf_neu_prod_cut->Fill(xF);
         }
