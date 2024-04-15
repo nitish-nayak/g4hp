@@ -142,7 +142,9 @@ void CreatePPFXHP(const char* invxsfile, const char* yieldfile, const char* phys
   TH1D* htemp_y;
   TH1D* htemp_y_alt;
   TH1D* htemp_neu_qe;
+  TH1D* htemp_y_nocut;
   f->GetObject("xs_dndxf_neu_prod_cut",htemp_y);
+  f->GetObject("xs_dndxf_neu_prod",htemp_y_nocut);
   f->GetObject("xs_alt_dndxf_neu",htemp_y_alt);
   f->GetObject("xs_dndxf_neu_cut",htemp_neu_qe);
   TH1D* frac_prod_neu = (TH1D*)htemp_y->Clone(TString::Format("frac_prod_xf_%sGeV", incE));
@@ -161,9 +163,10 @@ void CreatePPFXHP(const char* invxsfile, const char* yieldfile, const char* phys
   // const char* newname_y = name_y.c_str();
   // //cout<<newname_y<<endl;
   htemp_y->SetName(TString::Format("dndxf_%sGeV",incE));
-  htemp_y_alt->SetName(TString::Format("dndxf_alt_%sGeV",incE));
+  htemp_y->Scale(htemp_y_nocut->Integral()/htemp_y->Integral()); // correct for acceptance
+  // htemp_y_alt->SetName(TString::Format("dndxf_alt_%sGeV",incE));
   yieldneulist.Add(htemp_y);
-  yieldneulist.Add(htemp_y_alt);
+  // yieldneulist.Add(htemp_y_alt);
 
   TH1D* htemp_z;
   TH1D* htemp_tot_xs;
