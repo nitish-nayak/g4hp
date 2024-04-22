@@ -56,6 +56,7 @@ void CreateInvXS(Double_t mom, Double_t nincident, const char* infile, const cha
   TFile* foutput = new TFile(outfile,"RECREATE");
 
   Double_t inel_xs = yield_tot*frac_prod;
+  Double_t na49_trig_xs = 210.1; // trigger cross-section for neutron yields after NA49 acceptance cuts
   // std::ifstream ifs;
   // // expects fraction of prod / total yields
   // ifs.open(inel_yieldfile);
@@ -80,7 +81,6 @@ void CreateInvXS(Double_t mom, Double_t nincident, const char* infile, const cha
   TH1D* dndxf_neu_cut;
   TH1D* dndxf_neu_prod;
   TH1D* dndxf_neu_prod_cut;
-  TH1D* dndxf_neu_alt;
   TH1D* hinel_frac;
   TH1D* htot_xs;
 
@@ -113,10 +113,6 @@ void CreateInvXS(Double_t mom, Double_t nincident, const char* infile, const cha
   hinel_frac->SetBinContent(1, frac_prod);
   htot_xs = new TH1D("tot_xs", "", 1, 0, 1);
   htot_xs->SetBinContent(1, inel_xs/frac_prod);
-  // integrate over 2D xsec to get 1D
-  dndxf_neu_alt = (TH1D*) yield_dndxf_neu->Clone("xs_alt_dndxf_neu");
-  for(int i = 1; i <= dndxf_neu_alt->GetNbinsX();i++)
-    dndxf_neu_alt->SetBinContent(i, 0.);
 
   // convert the 2D yields histogram into a 2D cross-section histogram
   for(Int_t ii=0;ii<Npart+2;ii++){
@@ -128,9 +124,9 @@ void CreateInvXS(Double_t mom, Double_t nincident, const char* infile, const cha
       for(Int_t ix=1; ix <= dndxf_neu->GetNbinsX(); ix++){
         // format for neutron histograms ppfx expects (fraction wrt total inelastic xsec)
         dndxf_neu->SetBinContent(ix, (dndxf_neu->GetBinContent(ix)/nincident)*sigma_factor/(DxF_neu*inel_xs));
-        dndxf_neu_cut->SetBinContent(ix, (dndxf_neu_cut->GetBinContent(ix)/nincident)*sigma_factor/(DxF_neu*inel_xs));
+        dndxf_neu_cut->SetBinContent(ix, (dndxf_neu_cut->GetBinContent(ix)/nincident)*sigma_factor/(DxF_neu*na49_trig_xs));
         dndxf_neu_prod->SetBinContent(ix, (dndxf_neu_prod->GetBinContent(ix)/nincident)*sigma_factor/(DxF_neu*inel_xs));
-        dndxf_neu_prod_cut->SetBinContent(ix, (dndxf_neu_prod_cut->GetBinContent(ix)/nincident)*sigma_factor/(DxF_neu*inel_xs));
+        dndxf_neu_prod_cut->SetBinContent(ix, (dndxf_neu_prod_cut->GetBinContent(ix)/nincident)*sigma_factor/(DxF_neu*na49_trig_xs));
       }
     }
     for(Int_t ix=1; ix<=hxs->GetNbinsX(); ix++){
@@ -158,15 +154,6 @@ void CreateInvXS(Double_t mom, Double_t nincident, const char* infile, const cha
         hxs->SetBinError(ix,ipt,err_invXS);
 
         Double_t beamEcm = getEcm(mom);
-        // for neutrons
-        if(ii == 7){
-          // dndxf_neu_prod_bin += 0.5*beamEcm*(yield/nincident)*sigma_factor;
-          dndxf_neu_prod_bin += (yield/nincident)*sigma_factor;
-        }
-      }
-      if(ii == 7){
-        Int_t bin1d_xs = dndxf_neu_alt->FindBin(xfval);
-        dndxf_neu_alt->Fill(xfval, dndxf_neu_prod_bin/(inel_xs*DxF_neu));
       }
     }
   }
